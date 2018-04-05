@@ -215,7 +215,7 @@ int main(int argc, char const *argv[])
 				{
 					if (elements_to_spawn[i] == list_of_elements[j]->get_ID())
 					{
-						elements_on_map.push_back(new Image_item(list_of_elements[j], sf::Vector2f(i*100, i*75)));
+						//elements_on_map.push_back(new Image_item(list_of_elements[j], sf::Vector2f(i*100, i*75)));
 					}
 				}
 			}

@@ -19,7 +19,7 @@ Image_item::Image_item(sf::Texture* texture, sf::String name, sf::String descrip
 	this->class_ = class_;
 }
 
-Image_item::Image_item(const Item* &element, sf::Vector2f coordinates)
+Image_item::Image_item(const Image_item &element, sf::Vector2f coordinates)
 {
 	if (this != &element)
 	{

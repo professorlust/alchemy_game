@@ -11,7 +11,7 @@ private:
 
 public:
 	Image_item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, sf::Vector2f coordinates, uint8_t class_, uint8_t item_type, bool is_static = false);;
-	Image_item(const Item* &element, sf::Vector2f coordinates);
+	Image_item(const Image_item &element, sf::Vector2f coordinates);
 	~Image_item();
 
 	// static fun-s from Item
