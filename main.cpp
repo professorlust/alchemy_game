@@ -40,6 +40,14 @@ int main(int argc, char const *argv[])
 
 	reactions_list.push_back(new Reaction({1, 2}, {1, 2}));
 
+/*//////////////////////// Саня-тян
+	Image_item item1(&texture, "Fire", "", 1, sf::Vector2f(50, 50), 1, 1); // Просто объект класса картинкоэлемента
+	Image_item item2(item1, sf::Vector2f(0,0)); // Копируем просто картинкоэлемент - все окей.
+	Item* item3 = new Image_item(&texture, "Fire", "", 1, sf::Vector2f(50, 50), 1, 1); // Апкаст
+	Item* item4 - new Image_item(?); item3. Как это сделать конструктором копирования? Он должен принимать именно Item, 
+											а не Image_item и копировать все, включая переменные только из картинкоэле-
+											мента (текстура, спрайт)
+*///////////////////////////
 
 	while (window.isOpen())
 	{
@@ -206,7 +214,7 @@ int main(int argc, char const *argv[])
 			elements_to_erase.clear();
 		}
 
-		/*  */
+		/* Spawning new elements */
 		if (elements_to_spawn.size() > 0)
 		{
 			for (int i = 0; i < elements_to_spawn.size(); ++i)
