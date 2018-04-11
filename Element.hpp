@@ -26,6 +26,8 @@ private:
 	int adjustment_x = 0;
 	int adjustment_y = 0;
 
+	void update_item_colors();
+
 	unsigned int ID = 0; // 0 == error!
 
 	static unsigned int number_of_open_elements;
@@ -33,16 +35,16 @@ private:
 
 public:
 	/* Constructors */
-	Element(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, float spawn_position_x = 0, float spawn_position_y = 0, bool is_static = false);
-	Element(sf::String name, sf::String description, unsigned int ID, float spawn_position_x = 0, float spawn_position_y = 0, bool is_static = false);
-	Element(const Element &element, float spawn_position_x = 0, float spawn_position_y = 0);
-	~Element();	
+	Element(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, bool is_static = false);
+	Element(sf::String name, sf::String description, unsigned int ID, bool is_static = false);
+	Element(const Element &element, sf::Vector2f coordinates);
+	~Element();
 
 	/* General methods */
 	void update(sf::Vector2f cursor_position);
 	void render(sf::RenderWindow &window);
-	void set_position(float new_x, float new_y);
-	void set_position_hard(float new_x, float new_y); // witchout check_out_the_field()
+	void set_position(sf::Vector2f coordinates);
+	void set_position_hard(sf::Vector2f coordinates); // witchout check_out_the_field()
 	bool toggle_move(sf::Vector2f cursor_position); // ON
 	bool toggle_move(); // OFF
 

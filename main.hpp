@@ -12,12 +12,12 @@ void add_to_erase_list(Element *element, std::vector<unsigned int> *erase_vector
 	}
 }
 
-bool spawn_element(Element *element, std::vector<Element*> *elements_on_map_vector, float spawn_x, float spawn_y)
+bool spawn_element(Element *element, std::vector<Element*> *elements_on_map_vector, sf::Vector2f spawn_position)
 {
 	Element::set_opened(*element);
 	if (!element->is_static()) 
 	{
-		elements_on_map_vector->push_back(new Element(*element, spawn_x, spawn_y));
+		elements_on_map_vector->push_back(new Element(*element, spawn_position));
 		return true;
 	}
 	else 
@@ -26,12 +26,12 @@ bool spawn_element(Element *element, std::vector<Element*> *elements_on_map_vect
 	}
 }
 
-bool spawn_static_element(Element *element, std::vector<Element*> *elements_on_map_vector, float spawn_x, float spawn_y)
+bool spawn_static_element(Element *element, std::vector<Element*> *elements_on_map_vector, sf::Vector2f spawn_position)
 {
 	Element::set_opened(*element);
 	if (element->is_static()) 
 	{
-		elements_on_map_vector->push_back(new Element(*element, spawn_x, spawn_y));
+		elements_on_map_vector->push_back(new Element(*element, spawn_position));
 		return true;
 	}
 	else 

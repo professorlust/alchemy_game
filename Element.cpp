@@ -1,13 +1,12 @@
 #include "Element.hpp"
 
-Element::Element(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, float spawn_position_x, float spawn_position_y, bool is_static)
+Element::Element(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, bool is_static)
 {
 	this->texture = texture;
 	sprite.setTexture(*texture);
 	has_image = true;
 
 	rect.height = rect.width = ELEMENT_DIMENSIONS;
-	set_position(spawn_position_x, spawn_position_y);
 
 	this->ID = ID;
 	this->name = name;
@@ -17,12 +16,11 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 	this->description = description;
 }
 
-Element::Element(sf::String name, sf::String description, unsigned int ID, float spawn_position_x, float spawn_position_y, bool is_static)
+Element::Element(sf::String name, sf::String description, unsigned int ID, bool is_static)
 {
 	has_image = false;
 
 	rect.height = rect.width = ELEMENT_DIMENSIONS;
-	set_position(spawn_position_x, spawn_position_y);
 
 	this->ID = ID;
 	this->name = name;
@@ -31,7 +29,7 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, float
 	is_opened_ = false;
 	this->description = description;
 
-	background.setFillColor(sf::Color(25, 50, 150)); // Light grey
+	background.setFillColor(sf::Color(200, 200, 200)); // Light grey
 	background.setSize(sf::Vector2f(name.getSize()*10, 16));
 
 	text_name.setCharacterSize(16);
@@ -40,7 +38,7 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, float
 	text_name.setString(name);
 }
 
-Element::Element(const Element &element, float spawn_position_x, float spawn_position_y)
+Element::Element(const Element &element, sf::Vector2f coordinates)
 {
 	if (this != &element)
 	{
@@ -50,7 +48,7 @@ Element::Element(const Element &element, float spawn_position_x, float spawn_pos
 
 		rect.width = element.rect.width;
 		rect.height = element.rect.height;
-		set_position(spawn_position_x, spawn_position_y);
+		set_position(coordinates);
 
 		this->name = element.name;
 		this->ID = element.ID;
@@ -78,6 +76,11 @@ void Element::render(sf::RenderWindow &window)
 	}
 }
 
+void Element::update_item_colors()
+{
+
+}
+
 void Element::check_out_the_field(float *x, float *y)
 {
 	if (*y < Y_TOP_BORDER_LINE) *y = Y_TOP_BORDER_LINE;
@@ -86,12 +89,20 @@ void Element::check_out_the_field(float *x, float *y)
 	if (*x > X_RIGHT_BORDER_LINE - ELEMENT_DIMENSIONS) *x = X_RIGHT_BORDER_LINE - ELEMENT_DIMENSIONS;
 }
 
-void Element::set_position(float new_x, float new_y)
+void Element::set_position(sf::Vector2f coordinates)
 {
-	check_out_the_field(&new_x, &new_y);
-	rect.left = new_x;
-	rect.top = new_y;
-	sprite.setPosition(rect.left, rect.top);
+	check_out_the_field(&coordinates.x, &coordinates.y);
+	rect.left = coordinates.x;
+	rect.top = coordinates.y;
+	if (has_image)
+	{
+		sprite.setPosition(coordinates.x, coordinates.y);
+	}
+	else
+	{
+		background.setPosition(coordinates.x, coordinates.y);
+		text_name.setPosition(coordinates.x, coordinates.y);
+	}
 }
 
 void Element::update(sf::Vector2f cursor_position)
@@ -168,11 +179,19 @@ void Element::set_opened(Element &element)
 	number_of_open_elements++;
 }
 
-void Element::set_position_hard(float new_x, float new_y)
+void Element::set_position_hard(sf::Vector2f coordinates)
 {
-	rect.left = new_x;
-	rect.top = new_y;
-	sprite.setPosition(new_x, new_y);
+	rect.left = coordinates.x;
+	rect.top = coordinates.y;
+	if (has_image)
+	{
+		sprite.setPosition(coordinates.x, coordinates.y);
+	}
+	else
+	{
+		background.setPosition(coordinates.x, coordinates.y);
+		text_name.setPosition(coordinates.x, coordinates.y);
+	}
 }
 
 unsigned int Element::get_open_elements_num() // const too!
@@ -192,7 +211,7 @@ sf::String Element::get_name() const
 
 void Element::load_new_font(sf::Font font_)
 {
-	font = font;
+	font = font_;
 }
 
 unsigned int Element::number_of_open_elements = 0;

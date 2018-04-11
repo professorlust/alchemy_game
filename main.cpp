@@ -44,26 +44,24 @@ int main(int argc, char const *argv[])
 	selection_area_rect.setSize(sf::Vector2f(1, 1));
 	bool selection_area_is_active = false;
 
-	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
-	element_list_background.setPosition(0, 0);
-	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
-	element_list_background.setSize(sf::Vector2f(WINDOW_W, ELEMENT_DIMENSIONS*2));
-
-	elements_on_map.push_back(new Element("AAA", "AAA", 100, 400, 400));
-
 	/* Loading of the game */
 	Game *game = new Charodey();
 	game->load_game(elements_list, reactions_list, elements_to_spawn);
 	sf::Font global_font;
 	global_font.loadFromFile("lucon.ttf");
 	Element::load_new_font(global_font);
-
-	int item_list_page = 0;
-
+	
 	sf::Text item_name_text;
 	item_name_text.setCharacterSize(16);
 	item_name_text.setFillColor(sf::Color(0, 0, 0));
 	item_name_text.setFont(global_font);
+
+	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
+	element_list_background.setPosition(0, 0);
+	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
+	element_list_background.setSize(sf::Vector2f(WINDOW_W, ELEMENT_DIMENSIONS*2));
+
+	int item_list_page = 0;
 
 	sf::RectangleShape item_name_background;
 	item_name_background.setFillColor(sf::Color(200, 200, 200));
@@ -82,7 +80,7 @@ int main(int argc, char const *argv[])
 					spawn_x = WINDOW_W/2 + R*cos(angle), 
 					spawn_y = WINDOW_H/2 + R*sin(angle);
 					angle += 6.28 / elements_to_spawn.size();
-					spawn_element(elements_list[j], &elements_on_map, spawn_x, spawn_y);
+					spawn_element(elements_list[j], &elements_on_map, sf::Vector2f(spawn_x, spawn_y));
 
 					break;
 				}
@@ -119,7 +117,7 @@ int main(int argc, char const *argv[])
 							{
 								if (elements_list[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
-									if (spawn_element(elements_list[i], &elements_on_map, cursor_position.x, cursor_position.y))
+									if (spawn_element(elements_list[i], &elements_on_map, cursor_position))
 									{
 										float spawn_x = cursor_position.x;
 										float spawn_y = Y_TOP_BORDER_LINE - elements_list[i]->get_rect().top;
@@ -323,7 +321,7 @@ int main(int argc, char const *argv[])
 						spawn_x = cursor_position.x + R*cos(angle) + ELEMENT_DIMENSIONS/2, 
 						spawn_y = cursor_position.y + R*sin(angle) + ELEMENT_DIMENSIONS/2;
 						angle += 6.28 / elements_to_spawn.size();
-						spawn_element(elements_list[j], &elements_on_map, spawn_x, spawn_y);
+						spawn_element(elements_list[j], &elements_on_map, sf::Vector2f(spawn_x, spawn_y));
 
 						break;
 					}
@@ -378,7 +376,7 @@ int main(int argc, char const *argv[])
 				{
 					x = ELEMENT_DIMENSIONS * render_element_number - (WINDOW_W-ELEMENT_DIMENSIONS)*int(render_element_number / 12),
 					y = ELEMENT_DIMENSIONS * int(render_element_number/12);
-					elements_list[i]->set_position_hard(x, y);
+					elements_list[i]->set_position_hard(sf::Vector2f(x, y));
 					elements_list[i]->render(window);
 					render_element_number++;
 				}
