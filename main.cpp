@@ -36,7 +36,7 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> reaction_elements_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> elements_to_erase; // Positions of the elements in the array elements_on_map to be deleted
 	std::vector<unsigned int> elements_to_spawn; // IDs of the elemenets that will spawn after reaction
-	//std::vector<sf::Texture*> textures; // Used when downloading a game from a file
+	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
 	sf::RectangleShape selection_area_rect; // The selection area when the left button is pressed
 	selection_area_rect.setPosition(-1, -1);
@@ -49,9 +49,24 @@ int main(int argc, char const *argv[])
 	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
 	element_list_background.setSize(sf::Vector2f(WINDOW_W, ELEMENT_DIMENSIONS*2));
 
+	elements_on_map.push_back(new Element("AAA", "AAA", 100, 400, 400));
+
 	/* Loading of the game */
 	Game *game = new Charodey();
 	game->load_game(elements_list, reactions_list, elements_to_spawn);
+	sf::Font global_font;
+	global_font.loadFromFile("lucon.ttf");
+	Element::load_new_font(global_font);
+
+	int item_list_page = 0;
+
+	sf::Text item_name_text;
+	item_name_text.setCharacterSize(16);
+	item_name_text.setFillColor(sf::Color(0, 0, 0));
+	item_name_text.setFont(global_font);
+
+	sf::RectangleShape item_name_background;
+	item_name_background.setFillColor(sf::Color(200, 200, 200));
 
 	/* The spawn of new elements */
 	if (elements_to_spawn.size() > 0)
@@ -75,12 +90,6 @@ int main(int argc, char const *argv[])
 		}
 		elements_to_spawn.clear();
 	}
-
-	sf::Font global_font;
-	global_font.loadFromFile("Arial.ttf");
-	Element::initialization(&global_font);
-
-	int item_list_page = 0;
 
 	while (window.isOpen())
 	{
@@ -112,7 +121,9 @@ int main(int argc, char const *argv[])
 								{
 									if (spawn_element(elements_list[i], &elements_on_map, cursor_position.x, cursor_position.y))
 									{
-										elements_on_map[elements_on_map.size()-1]->enable_move(0, 0);
+										float spawn_x = cursor_position.x;
+										float spawn_y = Y_TOP_BORDER_LINE - elements_list[i]->get_rect().top;
+										elements_on_map[elements_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									}
 									break;
 								}
@@ -125,9 +136,7 @@ int main(int argc, char const *argv[])
 							{
 								if (elements_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
-									int defection_x = cursor_position.x - elements_on_map[i]->get_rect().left;
-									int defection_y = cursor_position.y - elements_on_map[i]->get_rect().top;
-									if (elements_on_map[i]->enable_move(defection_x, defection_y)) 
+									if (elements_on_map[i]->toggle_move(cursor_position)) 
 									{
 										selection_area_is_active = false;
 										break;
@@ -155,7 +164,10 @@ int main(int argc, char const *argv[])
 				{
 					for (int i = 0; i < elements_on_map.size(); ++i)
 					{
-						if (elements_on_map[i]->disabling_move()) break;
+						if (elements_on_map[i]->toggle_move()) 
+						{
+							break;
+						}
 					}
 
 					if (selection_area_is_active)
@@ -338,9 +350,19 @@ int main(int argc, char const *argv[])
 			}
 		}
 
-		if (temp_contains) 
+		if (temp_contains)
 		{
-			elements_on_map[temp_render_element_name_num]->render_name(window, cursor_position.x, cursor_position.y);
+			float temp_x = cursor_position.x + 15;
+			float temp_y = cursor_position.y + 10;
+
+			item_name_background.setSize(sf::Vector2f(elements_on_map[temp_render_element_name_num]->get_name().getSize()*10, 16));
+			item_name_background.setPosition(temp_x, temp_y);
+
+			item_name_text.setString(elements_on_map[temp_render_element_name_num]->get_name());
+			item_name_text.setPosition(temp_x, temp_y);
+
+			window.draw(item_name_background);
+			window.draw(item_name_text);
 		}
 
 		if (selection_area_is_active) window.draw(selection_area_rect);
@@ -356,7 +378,7 @@ int main(int argc, char const *argv[])
 				{
 					x = ELEMENT_DIMENSIONS * render_element_number - (WINDOW_W-ELEMENT_DIMENSIONS)*int(render_element_number / 12),
 					y = ELEMENT_DIMENSIONS * int(render_element_number/12);
-					elements_list[i]->qwerty(x, y);
+					elements_list[i]->set_position_hard(x, y);
 					elements_list[i]->render(window);
 					render_element_number++;
 				}

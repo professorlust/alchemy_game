@@ -1,10 +1,5 @@
 #include "Element.hpp"
 
-unsigned int Element::number_of_open_elements = 0;
-sf::RectangleShape* Element::item_name_rect = new sf::RectangleShape;
-sf::Text* Element::item_name_text = new sf::Text;
-bool Element::is_initiated = false;
-
 Element::Element(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, float spawn_position_x, float spawn_position_y, bool is_static)
 {
 	this->texture = texture;
@@ -35,6 +30,14 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, float
 	this->is_static_ = is_static;
 	is_opened_ = false;
 	this->description = description;
+
+	background.setFillColor(sf::Color(25, 50, 150)); // Light grey
+	background.setSize(sf::Vector2f(name.getSize()*10, 16));
+
+	text_name.setCharacterSize(16);
+	text_name.setFillColor(sf::Color(0, 0, 0));
+	text_name.setFont(font);
+	text_name.setString(name);
 }
 
 Element::Element(const Element &element, float spawn_position_x, float spawn_position_y)
@@ -70,11 +73,12 @@ void Element::render(sf::RenderWindow &window)
 	}
 	else
 	{
-
+		window.draw(background);
+		window.draw(text_name);
 	}
 }
 
-void Element::output_field_adjustment(float *x, float *y)
+void Element::check_out_the_field(float *x, float *y)
 {
 	if (*y < Y_TOP_BORDER_LINE) *y = Y_TOP_BORDER_LINE;
 	if (*y > Y_BOTTOM_BORDER_LINE - ELEMENT_DIMENSIONS) *y = Y_BOTTOM_BORDER_LINE - ELEMENT_DIMENSIONS;
@@ -84,7 +88,7 @@ void Element::output_field_adjustment(float *x, float *y)
 
 void Element::set_position(float new_x, float new_y)
 {
-	output_field_adjustment(&new_x, &new_y);
+	check_out_the_field(&new_x, &new_y);
 	rect.left = new_x;
 	rect.top = new_y;
 	sprite.setPosition(rect.left, rect.top);
@@ -94,40 +98,34 @@ void Element::update(sf::Vector2f cursor_position)
 {
 	if (is_move)
 	{
-		float new_x = cursor_position.x - deflection_x, 
-		      new_y = cursor_position.y - deflection_y;
-		output_field_adjustment(&new_x, &new_y);
+		float new_x = cursor_position.x - adjustment_x, 
+		      new_y = cursor_position.y - adjustment_y;
+		check_out_the_field(&new_x, &new_y);
 		rect.left = new_x;
 		rect.top = new_y;
-		sprite.setPosition(rect.left, rect.top);
+		if (has_image)
+		{
+			sprite.setPosition(rect.left, rect.top);
+		}
+		else
+		{
+			background.setPosition(rect.left, rect.top);
+			text_name.setPosition(rect.left, rect.top);
+		}
 	}
 }
 
-bool Element::check_collision(sf::FloatRect rect)
+bool Element::check_collision(sf::FloatRect rect) const
 {
 	return (this->rect.intersects(rect));
 }
 
-sf::FloatRect Element::get_rect()
+sf::FloatRect Element::get_rect() const
 {
 	return rect;
 }
 
-/* Returns true if the item has not moved */
-bool Element::enable_move(int d_x, int d_y)
-{
-	if (!is_move)
-	{
-		deflection_x = d_x;
-		deflection_y = d_y;
- 		is_move = true;
- 		return true;
- 	}
- 	else return false;
-}
-
- /* Returns true if the item has moved */
-bool Element::disabling_move()
+bool Element::toggle_move() // TURN OFF
 {
 	if (is_move)
 	{
@@ -137,17 +135,29 @@ bool Element::disabling_move()
  	else return false;
 }
 
-unsigned int Element::get_id()
+bool Element::toggle_move(sf::Vector2f cursor_position) // TURN ON
+{
+	if (!is_move)
+	{
+		adjustment_x = cursor_position.x - rect.left;
+		adjustment_y = cursor_position.y - rect.top;
+		is_move = true;
+		return true;
+	}
+	else return false;
+}
+
+unsigned int Element::get_id() const
 {
 	return ID;
 }
 
-bool Element::is_static()
+bool Element::is_static() const
 {
 	return is_static_;
 }
 
-bool Element::is_opened()
+bool Element::is_opened() const
 {
 	return is_opened_;
 }
@@ -158,47 +168,32 @@ void Element::set_opened(Element &element)
 	number_of_open_elements++;
 }
 
-void Element::qwerty(float new_x, float new_y)
+void Element::set_position_hard(float new_x, float new_y)
 {
 	rect.left = new_x;
 	rect.top = new_y;
 	sprite.setPosition(new_x, new_y);
 }
 
-unsigned int Element::get_open_elements_num()
+unsigned int Element::get_open_elements_num() // const too!
 {
 	return number_of_open_elements;
 }
 
-void Element::render_name(sf::RenderWindow &window, float x, float y)
-{
-	item_name_rect->setPosition(x- (name.getSize()+1) *7 - 5, y);
-	item_name_text->setPosition(x- (name.getSize()+1) *7 - 5, y);
-	item_name_text->setString(name);
-	item_name_rect->setSize(sf::Vector2f(name.getSize()*7 + 5, 16));
-
-	window.draw(*item_name_rect);
-	window.draw(*item_name_text);
-}
-
-void Element::initialization(sf::Font *font)
-{
-	if (!is_initiated)
-	{
-		item_name_text->setCharacterSize(16);
-		item_name_text->setFillColor(sf::Color(0, 0, 0));
-		item_name_text->setFont(*font);
-		item_name_rect->setFillColor(sf::Color(255, 243, 154));
-	}
-	is_initiated = true;
-}
-
-bool Element::rect_contains_cursor(float x, float y)
+bool Element::rect_contains_cursor(float x, float y) const
 {
 	return (rect.contains(x, y));
 }
 
-sf::String Element::get_name()
+sf::String Element::get_name() const
 {
 	return name;
 }
+
+void Element::load_new_font(sf::Font font_)
+{
+	font = font;
+}
+
+unsigned int Element::number_of_open_elements = 0;
+sf::Font Element::font = sf::Font();
