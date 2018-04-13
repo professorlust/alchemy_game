@@ -28,6 +28,10 @@ int main(int argc, char const *argv[])
 	float time = 0; // Time cash
 	float FPS = 0; // Frames per second
 
+	sf::Font global_font;
+	global_font.loadFromFile("lucon.ttf");
+	Element::load_new_font(global_font);
+
 	sf::Vector2f cursor_position; // Cursor coordinates
 
 	std::vector<Element*> elements_list; // All lists is loaded from the Game*
@@ -38,18 +42,15 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> elements_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
+	/* Loading of the game */
+	Game *game = new Charodey();
+	game->load_game(elements_list, reactions_list, elements_to_spawn);
+
 	sf::RectangleShape selection_area_rect; // The selection area when the left button is pressed
 	selection_area_rect.setPosition(-1, -1);
 	selection_area_rect.setFillColor(sf::Color(0, 0, 150, 150)); // Light blue
 	selection_area_rect.setSize(sf::Vector2f(1, 1));
 	bool selection_area_is_active = false;
-
-	/* Loading of the game */
-	Game *game = new Charodey();
-	game->load_game(elements_list, reactions_list, elements_to_spawn);
-	sf::Font global_font;
-	global_font.loadFromFile("lucon.ttf");
-	Element::load_new_font(global_font);
 	
 	sf::Text item_name_text;
 	item_name_text.setCharacterSize(16);

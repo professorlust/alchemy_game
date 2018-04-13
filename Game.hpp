@@ -17,21 +17,22 @@ protected:
 	unsigned int number_of_elements;
 	unsigned int number_of_reactions;
 
-	sf::String name,
-	author, // Author's name
-	description; // Information about the game
+	sf::String name;
+	sf::String author; // Author's name
+	sf::String description; // Information about the game
 
 	virtual void initialization_textures() = 0;
 	virtual void initialization_elements() = 0;
 	virtual void initialization_reactions() = 0;
 	virtual void initialization_started_elements() = 0;
+
 public:
 	void load_game(std::vector<Element*> &global_element_list, std::vector<Reaction*> &global_reactions_list, std::vector<unsigned int> &global_started_elements);
-
-	unsigned int get_number_of_elements();
-	unsigned int get_number_of_reactions();
 	void console_show_information();
 	void file_show_full_information();
+	
+	unsigned int get_number_of_elements();
+	unsigned int get_number_of_reactions();
 
 	Game();
 	~Game();

@@ -6,6 +6,7 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 	sprite.setTexture(*texture);
 	has_image = true;
 
+	rect.left = rect.left = 0;
 	rect.height = rect.width = ELEMENT_DIMENSIONS;
 
 	this->ID = ID;
@@ -20,7 +21,9 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, bool 
 {
 	has_image = false;
 
-	rect.height = rect.width = ELEMENT_DIMENSIONS;
+	rect.left = rect.left = 0;
+	rect.width = name.getSize()*10;
+	rect.height = 16;
 
 	this->ID = ID;
 	this->name = name;
@@ -37,24 +40,35 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, bool 
 	text_name.setFont(font);
 	text_name.setString(name);
 }
-
+#include <iostream>
 Element::Element(const Element &element, sf::Vector2f coordinates)
 {
 	if (this != &element)
 	{
-		this->texture = element.texture;
-		sprite.setTexture(*texture);
 		has_image = element.has_image;
+		if (has_image)
+		{
+			texture = element.texture;
+			sprite.setTexture(*texture);
+		}
+
+		name = element.name;
+		ID = element.ID;
+		is_opened_ = false;
+		is_static_ = element.is_static_;
+		description = element.description;
 
 		rect.width = element.rect.width;
 		rect.height = element.rect.height;
 		set_position(coordinates);
 
-		this->name = element.name;
-		this->ID = element.ID;
-		is_opened_ = false;
-		is_static_ = element.is_static_;
-		description = element.description;
+		background.setFillColor(sf::Color(200, 200, 200)); // Light grey
+		background.setSize(sf::Vector2f(name.getSize()*10, 16));
+
+		text_name.setCharacterSize(16);
+		text_name.setFillColor(sf::Color(0, 0, 0));
+		text_name.setFont(font);
+		text_name.setString(name);
 	}
 }
 

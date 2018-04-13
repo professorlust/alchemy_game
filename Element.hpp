@@ -62,4 +62,28 @@ public:
 	static unsigned int get_open_elements_num(); // const too!
 	static void load_new_font(sf::Font font_);
 };
+
+/* Элемент будет переименован в ITEM */
+enum item_classes
+{
+	NONE = 0, //
+	AIR, //
+	WATER, //
+	FIRE, //
+	EARTH, //
+	PLANT, //
+	ANIMAL, //
+	MAGIC, //
+	CIVILIZATION, //
+	HUMAN, //
+	FOOD, //
+	DARK, //
+	OTHER, //
+	DARK_BLUE, //
+	CRIMSON, // 
+	ORANGE, //
+	JUNGLE, //
+	EVIL //
+};
+
 #endif
