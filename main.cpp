@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
 	/* Loading of the game */
-	Game *game = new Charodey();
+	Game *game = new Test_game();
 	game->load_game(elements_list, reactions_list, elements_to_spawn);
 
 	sf::RectangleShape selection_area_rect; // The selection area when the left button is pressed
@@ -337,7 +337,7 @@ int main(int argc, char const *argv[])
 		bool temp_contains = false;
 		for (int i = elements_on_map.size()-1; i >= 0; --i)
 		{   
-			elements_on_map[i]->update(cursor_position);
+			elements_on_map[i]->update(cursor_position, time);
 			elements_on_map[i]->render(window);
 			if (!temp_contains)
 			{

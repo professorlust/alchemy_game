@@ -1,6 +1,6 @@
 #include "Element.hpp"
 #include "Reaction.hpp"
-#include "standart_games/charodey/Charodey.hpp"
+#include "standart_games\standart_games.hpp"
 
 #ifndef MAIN_HPP
 #define MAIN_HPP
