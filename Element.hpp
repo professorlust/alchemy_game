@@ -17,7 +17,7 @@ private:
 	sf::RectangleShape background;
 	sf::Text text_name;
 
-	bool has_image;
+	bool has_image_;
 	bool is_move = false;
 	bool is_static_ = false;
 	bool is_opened_ = false;
@@ -54,6 +54,7 @@ public:
 	bool is_opened() const;
 	bool rect_contains_cursor(float x, float y) const;
 	bool check_collision(sf::FloatRect rect) const;
+	bool has_image() const;
 	unsigned int get_id() const;
 	sf::FloatRect get_rect() const;
 	sf::String get_name() const;

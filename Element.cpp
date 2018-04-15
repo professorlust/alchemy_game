@@ -4,7 +4,7 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 {
 	this->texture = texture;
 	sprite.setTexture(*texture);
-	has_image = true;
+	has_image_ = true;
 
 	rect.left = rect.left = 0;
 	rect.height = rect.width = ELEMENT_DIMENSIONS;
@@ -22,7 +22,7 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 
 Element::Element(sf::String name, sf::String description, unsigned int ID, int type, bool is_static)
 {
-	has_image = false;
+	has_image_ = false;
 
 	rect.left = rect.left = 0;
 	rect.width = name.getSize()*10;
@@ -51,8 +51,8 @@ Element::Element(const Element &element, sf::Vector2f coordinates)
 {
 	if (this != &element)
 	{
-		has_image = element.has_image;
-		if (has_image)
+		has_image_ = element.has_image_;
+		if (has_image_)
 		{
 			texture = element.texture;
 			sprite.setTexture(*texture);
@@ -88,7 +88,7 @@ Element::~Element()
 
 void Element::render(sf::RenderWindow &window)
 {
-	if (has_image)
+	if (has_image_)
 	{
 		window.draw(sprite);
 	}
@@ -112,7 +112,7 @@ void Element::set_position(sf::Vector2f coordinates)
 	check_out_the_field(&coordinates.x, &coordinates.y);
 	rect.left = coordinates.x;
 	rect.top = coordinates.y;
-	if (has_image)
+	if (has_image_)
 	{
 		sprite.setPosition(coordinates.x, coordinates.y);
 	}
@@ -132,7 +132,7 @@ void Element::update(sf::Vector2f coordinates, float time)
 		check_out_the_field(&new_x, &new_y);
 		rect.left = new_x;
 		rect.top = new_y;
-		if (has_image)
+		if (has_image_)
 		{
 			sprite.setPosition(rect.left, rect.top);
 		}
@@ -191,6 +191,11 @@ bool Element::is_opened() const
 	return is_opened_;
 }
 
+bool Element::has_image() const
+{
+	return has_image_;
+}
+
 void Element::set_opened(Element &element) // static
 {
 	element.is_opened_ = true;
@@ -201,7 +206,7 @@ void Element::set_position_hard(sf::Vector2f coordinates)
 {
 	rect.left = coordinates.x;
 	rect.top = coordinates.y;
-	if (has_image)
+	if (has_image_)
 	{
 		sprite.setPosition(coordinates.x, coordinates.y);
 	}
@@ -231,111 +236,142 @@ void Element::load_new_font(sf::Font font_)
 {
 	font = font_;
 }
-
+#include <iostream>
 void Element::update_item_colors()
 {
 	switch (type)
 	{
 		case NONE: // == OTHER
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 255, 255, 200));
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case OTHER: // == NONE
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 255, 255, 200));
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case AIR:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(175, 238, 238, 200)); // PaleTurquoise
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case WATER:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(70, 130, 180, 200)); // SteelBlue
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case FIRE:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 50, 50, 200));
 			text_name.setFillColor(sf::Color(0, 0, 0));	
+			break;
 		}
 
 		case EARTH:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(139, 69, 19, 200)); // SaddleBrown
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case PLANT:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(173, 255, 47, 200)); // GreenYellow
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case ANIMAL:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 99, 71, 200)); // Tomato
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case MAGIC:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(199, 21, 133, 200)); // MediumVioletRed
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case CIVILIZATION:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(199, 199, 199, 200));
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case HUMAN:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 160, 122, 200)); // LightSalmon
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case FOOD:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
-			text_name.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 160, 122, 200)); // LightSalmon
+			text_name.setFillColor(sf::Color(255, 69, 0)); // OrangeRed
+			break;
+		}
+
+		case DARK:
+		{
+			background.setFillColor(sf::Color(0, 0, 0, 200));
+			text_name.setFillColor(sf::Color(255, 255, 255));
+			break;
 		}
 
 		case CRIMSON:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(220, 20, 60, 200)); // Crimson
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 
 		case DARK_BLUE:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
-			text_name.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(0, 0, 139, 200)); // DarkBlue
+			text_name.setFillColor(sf::Color(150, 150, 150));
+			break;
 		}
 
 		case ORANGE:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(255, 165, 0, 200)); // Orange
 			text_name.setFillColor(sf::Color(0, 0, 0));	
+			break;
 		}
 
 		case JUNGLE:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(0, 100, 0, 200)); // DarkGreen
 			text_name.setFillColor(sf::Color(0, 0, 0));		
+			break;
 		}
 
 		case EVIL:
 		{
-			background.setFillColor(sf::Color(0, 0, 0));
+			background.setFillColor(sf::Color(139, 0, 0, 200)); // DarkRed
 			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
+		}
+
+		default:
+		{
+			background.setFillColor(sf::Color(0, 0, 0, 200));
+			text_name.setFillColor(sf::Color(0, 0, 0));
+			break;
 		}
 	}
 }
