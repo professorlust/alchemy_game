@@ -13,11 +13,12 @@ int main(int argc, char const *argv[])
 {
 	std::ifstream config_ini; // COMING SOON NAVERNOE
 	config_ini.open("config.ini");
-	if (config_ini)
+	if (/*config_ini*/ 0)
 	{
 	}
 	else
 	{
+		GLOBAL_FONT.loadFromFile("lucon.ttf");
 	}
 	config_ini.close();
 
@@ -27,10 +28,6 @@ int main(int argc, char const *argv[])
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
 	float FPS = 0; // Frames per second
-
-	sf::Font global_font;
-	global_font.loadFromFile("lucon.ttf");
-	Element::load_new_font(global_font);
 
 	sf::Vector2f cursor_position; // Cursor coordinates
 
@@ -55,7 +52,7 @@ int main(int argc, char const *argv[])
 	sf::Text item_name_text;
 	item_name_text.setCharacterSize(16);
 	item_name_text.setFillColor(sf::Color(0, 0, 0));
-	item_name_text.setFont(global_font);
+	item_name_text.setFont(GLOBAL_FONT);
 
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);

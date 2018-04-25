@@ -41,7 +41,7 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, int t
 
 	text_name.setCharacterSize(16);
 	text_name.setFillColor(sf::Color(0, 0, 0));
-	text_name.setFont(font);
+	text_name.setFont(GLOBAL_FONT);
 	text_name.setString(name);
 
 	update_item_colors();
@@ -74,7 +74,7 @@ Element::Element(const Element &element, sf::Vector2f coordinates)
 
 		text_name.setCharacterSize(16);
 		text_name.setFillColor(sf::Color(0, 0, 0));
-		text_name.setFont(font);
+		text_name.setFont(GLOBAL_FONT);
 		text_name.setString(name);
 
 		update_item_colors();
@@ -232,11 +232,6 @@ sf::String Element::get_name() const
 	return name;
 }
 
-void Element::load_new_font(sf::Font font_)
-{
-	font = font_;
-}
-#include <iostream>
 void Element::update_item_colors()
 {
 	switch (type)
@@ -377,4 +372,3 @@ void Element::update_item_colors()
 }
 
 unsigned int Element::number_of_open_elements = 0;
-sf::Font Element::font = sf::Font();

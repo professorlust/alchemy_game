@@ -32,7 +32,6 @@ private:
 	unsigned int ID = 0; // 0 == error!
 
 	static unsigned int number_of_open_elements;
-	static sf::Font font;
 
 public:
 	/* Constructors */
@@ -62,7 +61,6 @@ public:
 	/* Static methods */
 	static void set_opened(Element &element);
 	static unsigned int get_open_elements_num(); // const too!
-	static void load_new_font(sf::Font font_);
 };
 
 /* Element будет переименован в Item позже. 
