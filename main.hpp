@@ -1,9 +1,10 @@
+#ifndef MAIN_HPP
+#define MAIN_HPP
+
 #include "Element.hpp"
 #include "Reaction.hpp"
 #include "standart_games\standart_games.hpp"
 
-#ifndef MAIN_HPP
-#define MAIN_HPP
 void add_to_erase_list(Element *element, std::vector<unsigned int> *erase_vector, unsigned int num)
 {
 	if (!element->is_static()) 

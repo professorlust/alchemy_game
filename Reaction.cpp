@@ -54,7 +54,7 @@ void Reaction::set_description(sf::String description)
 	this->description = description;
 }
 
-std::vector<unsigned int> Reaction::get_output_elements()
+std::vector<unsigned int> Reaction::get_output_items()
 {
 	return output_reagents;
 }

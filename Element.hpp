@@ -1,9 +1,10 @@
+#ifndef ELEMENT_HPP
+#define ELEMENT_HPP
+
 #include "defines.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#ifndef ELEMENT_HPP
-#define ELEMENT_HPP
 class Element
 {
 private:

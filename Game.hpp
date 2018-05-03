@@ -1,11 +1,12 @@
+#ifndef GAME_HPP
+#define GAME_HPP
+
 #include <SFML\Graphics.hpp>
 #include <iostream>
 #include <fstream>
 #include "Reaction.hpp"
 #include "Element.hpp"
 
-#ifndef GAME_HPP
-#define GAME_HPP
 class Game
 {
 protected:
