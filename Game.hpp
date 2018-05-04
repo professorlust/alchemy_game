@@ -18,7 +18,7 @@ protected:
 	unsigned int number_of_elements;
 	unsigned int number_of_reactions;
 
-	sf::String name;
+	sf::String name; // Name of the game
 	sf::String author; // Author's name
 	sf::String description; // Information about the game
 

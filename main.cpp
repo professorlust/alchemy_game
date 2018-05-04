@@ -52,21 +52,26 @@ int main(int argc, char const *argv[])
 	sf::RectangleShape item_name_background;
 	item_name_background.setFillColor(sf::Color(200, 200, 200));
 
-	/* The spawn of new elements */
+	/* Spawn of starting elements */
+	// A slightly modified code for the appearance of new elements.
 	if (items_to_spawn.size() > 0)
 	{
-		float R = 32 * items_to_spawn.size(); // Radious of sp
-		float angle = 0;
+		float R = ELEMENT_DIMENSIONS, angle = 0;
+		int number = items_to_spawn.size();
+		float spawn_x_center = WINDOW_W / 2, // Center of a circle of spawn of elements
+			  spawn_y_center = (WINDOW_H - Y_TOP_BORDER_LINE) / 2;
 		for (int i = 0; i < items_to_spawn.size(); ++i)
 		{
-			for (int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
+			for (int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
 			{
 				if (items_to_spawn[i] == items_list[j]->get_id())
 				{
-					spawn_x = WINDOW_W/2 + R*cos(angle), 
-					spawn_y = WINDOW_H/2 + R*sin(angle);
-					angle += 6.28 / items_to_spawn.size();
-					spawn_element(items_list[j], &items_on_map, sf::Vector2f(spawn_x, spawn_y));
+					angle += 6.28/number;
+					spawn_x = spawn_x_center + R*cos(angle), 
+					spawn_y = spawn_y_center + R*sin(angle);
+
+					Element::set_opened(*items_list[j]);
+					items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
 
 					break;
 				}
@@ -106,13 +111,11 @@ int main(int argc, char const *argv[])
 							{
 								if (items_list[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
-									if (spawn_element(items_list[i], &items_on_map, cursor_position))
-									{
-										float spawn_x = cursor_position.x;
-										float spawn_y = Y_TOP_BORDER_LINE - items_list[i]->get_rect().top;
-										items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
-										selected_item = items_on_map.size()-1;
-									}
+									float spawn_x = cursor_position.x;
+									float spawn_y = Y_TOP_BORDER_LINE - items_list[i]->get_rect().top;
+									items_on_map.push_back(new Element(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
+									items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
+									selected_item = items_on_map.size()-1;
 									break;
 								}
 							}
@@ -128,7 +131,6 @@ int main(int argc, char const *argv[])
 									{
 										selection_area_is_active = false;
 										selected_item = i;
-										std::cout << "Selected item number: " << i << std::endl;
 										break;
 									}
 								}
@@ -142,7 +144,7 @@ int main(int argc, char const *argv[])
 						{
 							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 							{
-								add_to_erase_list(items_on_map[i], &items_to_erase, i);
+								items_to_erase.push_back(i);
 								break;
 							}
 						}
@@ -167,7 +169,7 @@ int main(int argc, char const *argv[])
 							if (selection_area_rect.getGlobalBounds().intersects(items_on_map[i]->get_rect()))
 							{
 								reaction_elements_IDs.push_back(items_on_map[i]->get_id());
-								add_to_erase_list(items_on_map[i], &items_to_erase, i);
+								items_to_erase.push_back(i);
 							}
 						}
 					}
@@ -286,18 +288,22 @@ int main(int argc, char const *argv[])
 		// The spawn of new elements
 		if (items_to_spawn.size() > 0)
 		{
-			float R = 32 * items_to_spawn.size(); // Radious of sp
-			float angle = 0;
+			float R = ELEMENT_DIMENSIONS/1.75, angle = 0;
+			int number = items_to_spawn.size();
+
 			for (int i = 0; i < items_to_spawn.size(); ++i)
 			{
 				for (int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
 				{
-					if (items_to_spawn[i] == items_list[j]->get_id())
+					if (items_to_spawn[i] == items_list[j]->get_id() &
+						!items_list[j]->is_static())
 					{
-						spawn_x = cursor_position.x + R*cos(angle) + ELEMENT_DIMENSIONS/2, 
-						spawn_y = cursor_position.y + R*sin(angle) + ELEMENT_DIMENSIONS/2;
-						angle += 6.28 / items_to_spawn.size();
-						spawn_element(items_list[j], &items_on_map, sf::Vector2f(spawn_x, spawn_y));
+						angle += 6.28/number;
+						spawn_x = cursor_position.x + R*cos(angle), 
+						spawn_y = cursor_position.y + R*sin(angle);
+
+						Element::set_opened(*items_list[j]);
+						items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
 
 						break;
 					}
@@ -308,20 +314,18 @@ int main(int argc, char const *argv[])
 
 		window.clear(sf::Color(255, 255, 255));
 
-		int temp_render_element_name_num = -1; // Render the element name
+		int32_t temp_render_element_name_num = -1; // Render the element name
 		bool temp_contains = false;
 		for (int i = items_on_map.size()-1; i >= 0; --i)
 		{   
 			items_on_map[i]->update(cursor_position, time);
 			items_on_map[i]->render(window);
-			if (!temp_contains)
+
+			if (items_on_map[i]->rect_contains_cursor(cursor_position.x, cursor_position.y) &
+			   (items_on_map[i]->has_image()) )
 			{
-				if (items_on_map[i]->rect_contains_cursor(cursor_position.x, cursor_position.y) &
-				   (items_on_map[i]->has_image()) )
-				{
-					temp_contains = true;
-					temp_render_element_name_num = i;
-				}
+				temp_contains = true;
+				temp_render_element_name_num = i;
 			}
 		}
 
@@ -347,7 +351,8 @@ int main(int argc, char const *argv[])
 			(i < items_list.size()) & (render_element_number < 24); 
 			++i)
 		{
-			if (items_list[i]->is_opened())
+			if (items_list[i]->is_opened() &
+				!items_list[i]->is_static())
 			{
 				if (missing_elements == 0)
 				{
@@ -365,7 +370,7 @@ int main(int argc, char const *argv[])
 		}
 
 		window.display();
-	} // end of while (window.isOpen())
+	}
 
 	return 0;
 }
