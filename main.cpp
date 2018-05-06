@@ -321,7 +321,7 @@ int main(int argc, char const *argv[])
 			items_on_map[i]->update(cursor_position, time);
 			items_on_map[i]->render(window);
 
-			if (items_on_map[i]->rect_contains_cursor(cursor_position.x, cursor_position.y) &
+			if (items_on_map[i]->rect_contains_cursor(cursor_position) &
 			   (items_on_map[i]->has_image()) )
 			{
 				temp_contains = true;
