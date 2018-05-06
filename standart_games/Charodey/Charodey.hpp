@@ -1,4 +1,4 @@
-#include "../../Game.hpp" // Ругаеется, что таких нет
+#include "../../Game.hpp"
 
 class Charodey : public Game
 {

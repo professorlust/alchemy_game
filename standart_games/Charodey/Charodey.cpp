@@ -81,55 +81,56 @@ void Charodey::initialization_textures()
 
 void Charodey::initialization_elements()
 {
-	element_list.push_back(Element(textures[0], "Fire", "", 1));
-	element_list.push_back(Element(textures[1], "Water", "", 2));
-	element_list.push_back(Element(textures[2], "Earth", "", 3));
-	element_list.push_back(Element(textures[3], "Air", "", 4));
-	element_list.push_back(Element(textures[4], "Lava", "", 5));
-	element_list.push_back(Element(textures[5], "Swamp", "", 6));
-	element_list.push_back(Element(textures[6], "Alcohol", "", 7));
-	element_list.push_back(Element(textures[7], "Stone", "", 8));
-	element_list.push_back(Element(textures[8], "Sand", "", 9));
-	element_list.push_back(Element(textures[9], "Steam", "", 10));
-	element_list.push_back(Element(textures[10], "Energy", "", 11));
-	element_list.push_back(Element(textures[11], "Glass", "", 12));
-	element_list.push_back(Element(textures[12], "Spark", "", 13));
-	element_list.push_back(Element(textures[13], "Clay", "", 14));
-	element_list.push_back(Element(textures[14], "Brick", "", 15));
-	element_list.push_back(Element(textures[15], "Dust", "", 16));
-	element_list.push_back(Element(textures[16], "Desert", "", 17));
-	element_list.push_back(Element(textures[17], "Philosopher's Stone", "", 18));
-	element_list.push_back(Element(textures[18], "Life", "", 19));
-	element_list.push_back(Element(textures[19], "Bacteria", "", 20));
-	element_list.push_back(Element(textures[20], "Seaweed", "", 21));
-	element_list.push_back(Element(textures[21], "Fire Elemental", "", 22));
-	element_list.push_back(Element(textures[22], "Lava golem", "", 23));
-	element_list.push_back(Element(textures[23], "Ash", "", 24)); // or cinder?
-	element_list.push_back(Element(textures[24], "Lake", "", 25));
-	element_list.push_back(Element(textures[25], "Silver", "", 26));
-	element_list.push_back(Element(textures[26], "Swamp golem", "", 27));
-	element_list.push_back(Element(textures[27], "Egg", "", 28));
-	element_list.push_back(Element(textures[28], "Bird", "", 29));
-	element_list.push_back(Element(textures[29], "Phoenix", "", 30));
-	element_list.push_back(Element(textures[30], "Golem", "", 31));
-	element_list.push_back(Element(textures[31], "Human", "", 32));
-	element_list.push_back(Element(textures[32], "Metal", "", 33));
-	element_list.push_back(Element(textures[33], "Metal golem", "", 34));
-	element_list.push_back(Element(textures[34], "Alcoholic", "", 35));
-	element_list.push_back(Element(textures[35], "Tool", "", 36));
-	element_list.push_back(Element(textures[36], "Hut", "", 37));
-	element_list.push_back(Element(textures[37], "Windstorm", "", 38)); // or what?
-	element_list.push_back(Element(textures[38], "Thunderbird", "", 39));
-	element_list.push_back(Element(textures[39], "Sulfur", "", 40));
-	element_list.push_back(Element(textures[40], "Plankton", "", 41));
-	element_list.push_back(Element(textures[41], "Seeds", "", 42));
-	element_list.push_back(Element(textures[42], "Tree", "", 43));
-	element_list.push_back(Element(textures[43], "Forest", "", 44));
-	element_list.push_back(Element(textures[44], "Vulcan", "", 45));
-	element_list.push_back(Element(textures[45], "Vodka", "", 46));
-	element_list.push_back(Element(textures[46], "Moss", "", 47));
-	element_list.push_back(Element(textures[47], "Fern", "", 48));
-	element_list.push_back(Element(textures[48], "Steam boiler", "", 49));
+	element_list.emplace_back(textures[0], "Fire", "", 1);
+	element_list.emplace_back(textures[1], "Water", "", 2);
+	element_list.emplace_back(textures[2], "Earth", "", 3);
+	element_list.emplace_back(textures[3], "Air", "", 4);
+	element_list.emplace_back(textures[4], "Lava", "", 5);
+	element_list.emplace_back(textures[5], "Swamp", "", 6);
+	element_list.emplace_back(textures[6], "Alcohol", "", 7);
+	element_list.emplace_back(textures[7], "Stone", "", 8);
+	element_list.emplace_back(textures[8], "Sand", "", 9);
+	element_list.emplace_back(textures[9], "Steam", "", 10);
+	element_list.emplace_back(textures[10], "Energy", "", 11);
+	element_list.emplace_back(textures[11], "Glass", "", 12);
+	element_list.emplace_back(textures[12], "Spark", "", 13);
+	element_list.emplace_back(textures[13], "Clay", "", 14);
+	element_list.emplace_back(textures[14], "Brick", "", 15);
+	element_list.emplace_back(textures[15], "Dust", "", 16);
+	element_list.emplace_back(textures[16], "Desert", "", 17);
+	element_list.emplace_back(textures[17], "Philosopher's Stone", "", 18);
+	element_list.emplace_back(textures[18], "Life", "", 19);
+	element_list.emplace_back(textures[19], "Bacteria", "", 20);
+	element_list.emplace_back(textures[20], "Seaweed", "", 21);
+	element_list.emplace_back(textures[21], "Fire Elemental", "", 22);
+	element_list.emplace_back(textures[22], "Lava golem", "", 23);
+	element_list.emplace_back(textures[23], "Ash", "", 24); // or cinder?
+	element_list.emplace_back(textures[24], "Lake", "", 25);
+	element_list.emplace_back(textures[25], "Silver", "", 26);
+	element_list.emplace_back(textures[26], "Swamp golem", "", 27);
+	element_list.emplace_back(textures[27], "Egg", "", 28);
+	element_list.emplace_back(textures[28], "Bird", "", 29);
+	element_list.emplace_back(textures[29], "Phoenix", "", 30);
+	element_list.emplace_back(textures[30], "Golem", "", 31);
+	element_list.emplace_back(textures[31], "Human", "", 32);
+	element_list.emplace_back(textures[32], "Metal", "", 33);
+	element_list.emplace_back(textures[33], "Metal golem", "", 34);
+	element_list.emplace_back(textures[34], "Alcoholic", "", 35);
+	element_list.emplace_back(textures[35], "Tool", "", 36);
+	element_list.emplace_back(textures[36], "Hut", "", 37);
+	element_list.emplace_back(textures[37], "Windstorm", "", 38); // or what?
+	element_list.emplace_back(textures[38], "Thunderbird", "", 39);
+	element_list.emplace_back(textures[39], "Sulfur", "", 40);
+	element_list.emplace_back(textures[40], "Plankton", "", 41);
+	element_list.emplace_back(textures[41], "Seeds", "", 42);
+	element_list.emplace_back(textures[42], "Tree", "", 43);
+	element_list.emplace_back(textures[43], "Forest", "", 44);
+	element_list.emplace_back(textures[44], "Vulcan", "", 45);
+	element_list.emplace_back(textures[45], "Vodka", "", 46);
+	element_list.emplace_back(textures[46], "Moss", "", 47);
+	element_list.emplace_back(textures[47], "Fern", "", 48);
+	element_list.emplace_back(textures[48], "Steam boiler", "", 49);
+	element_list.emplace_back("Dirt", "", 50, EARTH_COLOR);
 }
 
 void Charodey::initialization_reactions()
@@ -185,6 +186,7 @@ void Charodey::initialization_reactions()
 	reactions_list.push_back(Reaction({6, 21}, {47}));  // swamp+seaweed=moss
 	reactions_list.push_back(Reaction({6, 47}, {48}));  // swamp+moss=fern
 	reactions_list.push_back(Reaction({10, 33}, {49}));  // steam+metal=steam boiler
+	reactions_list.push_back(Reaction({2, 16}, {50}));  // water+dust=dirt
 }
 
 void Charodey::initialization_started_elements()
