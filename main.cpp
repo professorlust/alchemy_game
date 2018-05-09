@@ -11,7 +11,7 @@
 
 int main(int argc, char const *argv[])
 {
-	GLOBAL_FONT.loadFromFile("lucon.ttf");
+	Config config("Config.ini");
 
 	std::vector<Element*> items_list; // All lists is loaded from the Game*
 	std::vector<Element*> items_on_map;

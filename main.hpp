@@ -3,6 +3,7 @@
 
 #include "Element.hpp"
 #include "Reaction.hpp"
+#include "Config.hpp"
 #include "standart_games\standart_games.hpp"
 
 std::string update_opened_elements_string(int opened, int all)
