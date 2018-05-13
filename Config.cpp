@@ -3,8 +3,6 @@
 Config::Config(std::string file_p)
 {
 	// WINDOW_H and WINDOW_W in defines.cpp
-	GLOBAL_FONT.loadFromFile("lucon.ttf");
-
 	file.open(file_p);
 	if (file.is_open())
 	{
@@ -20,26 +18,16 @@ Config::~Config()
 
 void Config::load_from_file()
 {
-	/*
-		Каждая строка имеет такой формат: "переменная оператор переменная" (примеры: font = arial.ttf ; width = 500)
-		На данный момент оператор нигде не учитывается.
-		Я попытаюсь сделать парсинг конфига самостоятельно, если получится. Кривой очень, конечно.
-		В argument - что принмается. в operator - действие (пока что только = будет). В value - значение.
-		Значение приводится к тому типу, которое нужно аргументу.
-		Те аргументы, которые не были назначены забиваются стандартными значениями.
-	*/
 	std::string buffer;
 
-	/* Флаги загрузки аргументов */
-	bool font_loaded = false, // шрифт
-	width_loaded = false, // высота
-	height_loaded = false; // и так далее, понятно из названия
+	bool font_loaded = false,
+	width_loaded = false,
+	height_loaded = false;
 
 	while (std::getline(file, buffer))
 	{
 		std::string argument, operator_, value;
 
-		/*Кривой парсинг строки*/
 		for (int i = 0, step = 0; i < buffer.size(); ++i)
 		{
 			if (step == 0)
@@ -62,10 +50,10 @@ void Config::load_from_file()
 			}
 		}
 
-		/* Перебор вариантов аргументов */
 		if (argument == "font" & !font_loaded)
 		{
-			GLOBAL_FONT.loadFromFile(value);
+			if (!GLOBAL_FONT.loadFromFile(value)) // Protection against missing font
+				GLOBAL_FONT.loadFromFile("lucon.ttf"); 
 			font_loaded = true;
 		}
 		else if (argument == "width" & !width_loaded)

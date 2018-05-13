@@ -7,7 +7,7 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 	has_image_ = true;
 
 	rect.left = rect.left = 0;
-	rect.height = rect.width = ELEMENT_DIMENSIONS;
+	rect.height = rect.width = ITEM_DIMENSIONS;
 
 	item_color = item_color_;
 
@@ -98,10 +98,15 @@ void Element::render(sf::RenderWindow &window)
 
 void Element::check_out_the_field(float *x, float *y)
 {
-	if (*y < Y_TOP_BORDER_LINE) *y = Y_TOP_BORDER_LINE;
-	if (*y > Y_BOTTOM_BORDER_LINE - rect.height) *y = Y_BOTTOM_BORDER_LINE - rect.height;
-	if (*x < X_LEFT_BORDER_LINE) *x = X_LEFT_BORDER_LINE;
-	if (*x > X_RIGHT_BORDER_LINE - rect.width) *x = X_RIGHT_BORDER_LINE - rect.width;
+	int y_top_border = BORDERS.top,
+	y_bottom_border = BORDERS.top + BORDERS.height,
+	x_left_border = BORDERS.left,
+	x_right_border = BORDERS.left + BORDERS.width;
+
+	if (*y < y_top_border) *y = y_top_border;
+	if (*y > y_bottom_border - ITEM_DIMENSIONS) *y = y_bottom_border - rect.height;
+	if (*x < x_left_border) *x = x_left_border;
+	if (*x > x_right_border - ITEM_DIMENSIONS) *x = x_right_border - rect.width;
 }
 
 void Element::set_position(sf::Vector2f coordinates)
@@ -166,8 +171,11 @@ bool Element::toggle_move(sf::Vector2f cursor_position)
 
 void Element::set_opened(Element &element) // static
 {
-	element.is_opened_ = true;
-	number_of_open_elements++;
+	if (!element.is_opened_)
+	{
+		element.is_opened_ = true;
+		number_of_open_elements++;
+	}
 }
 
 void Element::set_position_hard(sf::Vector2f coordinates)

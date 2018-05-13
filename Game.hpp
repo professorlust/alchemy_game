@@ -31,6 +31,7 @@ public:
 	void load_game(std::vector<Element*> &global_element_list, std::vector<Reaction*> &global_reactions_list, std::vector<unsigned int> &global_started_elements);
 	void console_show_information();
 	void file_show_full_information();
+	void open_all_items(std::vector<Element*> &items);
 	
 	unsigned int get_number_of_elements();
 	unsigned int get_number_of_reactions();

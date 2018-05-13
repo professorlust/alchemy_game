@@ -12,6 +12,7 @@
 int main(int argc, char const *argv[])
 {
 	Config config("Config.ini");
+	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
 
 	std::vector<Element*> items_list; // All lists is loaded from the Game*
 	std::vector<Element*> items_on_map;
@@ -45,7 +46,7 @@ int main(int argc, char const *argv[])
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);
 	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
-	element_list_background.setSize(sf::Vector2f(WINDOW_W, ELEMENT_DIMENSIONS*2));
+	element_list_background.setSize(sf::Vector2f(WINDOW_W, ITEM_DIMENSIONS*2));
 
 	int item_list_page = 0;
 
@@ -56,10 +57,10 @@ int main(int argc, char const *argv[])
 	// A slightly modified code for the appearance of new elements.
 	if (items_to_spawn.size() > 0)
 	{
-		float R = ELEMENT_DIMENSIONS, angle = 0;
+		float R = ITEM_DIMENSIONS, angle = 0;
 		int number = items_to_spawn.size();
 		float spawn_x_center = WINDOW_W / 2, // Center of a circle of spawn of elements
-			  spawn_y_center = (WINDOW_H - Y_TOP_BORDER_LINE) / 2;
+			  spawn_y_center = (WINDOW_H - BORDERS.top) / 2;
 		for (int i = 0; i < items_to_spawn.size(); ++i)
 		{
 			for (int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
@@ -105,14 +106,14 @@ int main(int argc, char const *argv[])
 				{
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 					{
-						if (cursor_position.y < Y_TOP_BORDER_LINE) // Hit an array of elements
+						if (cursor_position.y < BORDERS.top) // Hit an array of elements
 						{
 							for (int i = 0; i < items_list.size(); ++i)
 							{
 								if (items_list[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
 									float spawn_x = cursor_position.x;
-									float spawn_y = Y_TOP_BORDER_LINE - items_list[i]->get_rect().top;
+									float spawn_y = BORDERS.top; // BORDERS.top - items_list[i]->get_rect().top;
 									items_on_map.push_back(new Element(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
 									items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									selected_item = items_on_map.size()-1;
@@ -120,7 +121,7 @@ int main(int argc, char const *argv[])
 								}
 							}
 						}
-						else // for (cursor_position.y < Y_TOP_BORDER_LINE). Hit an game zone
+						else // for (cursor_position.y < BORDERS.top). Hit an game zone
 						{
 							selection_area_is_active = true;
 							for (int i = 0; i < items_on_map.size(); ++i)
@@ -211,12 +212,13 @@ int main(int argc, char const *argv[])
 
 				case sf::Event::KeyReleased:
 				{
-					// ++ - VNIZ, -- - VVERX! NAOBOROT!
+					int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
+
 					if ( (event.key.code == sf::Keyboard::W) ||
 						(event.key.code == sf::Keyboard::PageUp) ||
 						(event.key.code == sf::Keyboard::Up) )
 					{
-						if (item_list_page < 0)
+						if (number_of_items_in_row*(item_list_page+1) < Element::get_open_elements_num())
 						{
 							item_list_page++;
 						}
@@ -225,8 +227,7 @@ int main(int argc, char const *argv[])
 						(event.key.code == sf::Keyboard::PageDown) ||
 						(event.key.code == sf::Keyboard::Down) )
 					{
-						if ( item_list_page*24 < Element::get_open_elements_num() &
-							(Element::get_open_elements_num() > 24) )
+						if (item_list_page > 0)
 						{
 							item_list_page--;
 						}
@@ -246,14 +247,7 @@ int main(int argc, char const *argv[])
 				// protection against access to the area of opened elements
 			float temp_w = cursor_position.x - selection_area_rect.getPosition().x;
 			float temp_h = 0;
-			if (cursor_position.y > Y_TOP_BORDER_LINE) 
-			{
-				temp_h = cursor_position.y - selection_area_rect.getPosition().y;
-			}
-			else
-			{
-				temp_h = Y_TOP_BORDER_LINE - selection_area_rect.getPosition().y;
-			}
+			temp_h = (cursor_position.y > BORDERS.top) ? cursor_position.y - selection_area_rect.getPosition().y : BORDERS.top - selection_area_rect.getPosition().y;
 
 			selection_area_rect.setSize(sf::Vector2f(temp_w, temp_h));
 		}
@@ -288,7 +282,7 @@ int main(int argc, char const *argv[])
 		// The spawn of new elements
 		if (items_to_spawn.size() > 0)
 		{
-			float R = ELEMENT_DIMENSIONS/1.75, angle = 0;
+			float R = ITEM_DIMENSIONS/1.75, angle = 0;
 			int number = items_to_spawn.size();
 
 			for (int i = 0; i < items_to_spawn.size(); ++i)
@@ -344,30 +338,37 @@ int main(int argc, char const *argv[])
 			window.draw(item_name_text);
 		}
 
-		if (selection_area_is_active) window.draw(selection_area_rect);
-		window.draw(element_list_background);
-		// int missing_elements - is the number of open items that will not be rendered first. I tried to explain
-		for (int i = 0, render_element_number = 0, missing_elements = item_list_page*24, x, y; 
-			(i < items_list.size()) & (render_element_number < 24); 
-			++i)
+		if (selection_area_is_active) 
 		{
-			if (items_list[i]->is_opened() &
-				!items_list[i]->is_static())
+			window.draw(selection_area_rect);
+		}
+
+		window.draw(element_list_background);
+
+		/* Top panel render */
+		{
+			int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
+
+			unsigned int first_item = item_list_page*number_of_items_in_row,
+			number_of_render_items = number_of_items_in_row * 2,
+			render_number = 0;
+
+			for (int i = first_item, x = 0, y = 0; 
+				i < items_list.size() & render_number < number_of_render_items; 
+				++i) // For readability, the line is divided into three lines
 			{
-				if (missing_elements == 0)
+				if (items_list[i]->is_opened() &
+					!items_list[i]->is_static())
 				{
-					x = ELEMENT_DIMENSIONS * render_element_number - (WINDOW_W-ELEMENT_DIMENSIONS)*int(render_element_number / 12),
-					y = ELEMENT_DIMENSIONS * int(render_element_number/12);
+					x = (render_number < number_of_items_in_row) ? render_number*ITEM_DIMENSIONS : (render_number-number_of_items_in_row)*ITEM_DIMENSIONS;
+					y = (render_number < number_of_items_in_row) ? 0 : ITEM_DIMENSIONS;
 					items_list[i]->set_position_hard(sf::Vector2f(x, y));
 					items_list[i]->render(window);
-					render_element_number++;
-				}
-				else
-				{
-					missing_elements++;
+
+					render_number++;
 				}
 			}
-		}
+		} // end of unnamed namespace
 
 		window.display();
 	}

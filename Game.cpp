@@ -75,3 +75,11 @@ void Game::file_show_full_information()
 	<< "COMING SOON!";
 	output_file.close();
 }
+
+void Game::open_all_items(std::vector<Element*> &items)
+{
+	for (int i = 0; i < items.size(); ++i)
+	{
+		Element::set_opened(*items[i]);
+	}
+}
