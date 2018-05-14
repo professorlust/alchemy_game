@@ -64,5 +64,4 @@ public:
 	static void set_opened(Element &element);
 	static unsigned int get_open_elements_num(); // const too!
 };
-
 #endif

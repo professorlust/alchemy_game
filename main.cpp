@@ -7,7 +7,10 @@
 #include <vector>
 #include <cmath>
 
-#include "main.hpp"
+#include "Element.hpp"
+#include "Reaction.hpp"
+#include "Config.hpp"
+#include "standart_games\standart_games.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -24,6 +27,7 @@ int main(int argc, char const *argv[])
 
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
+	game->file_show_full_information();
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -38,20 +42,27 @@ int main(int argc, char const *argv[])
 	selection_area_rect.setSize(sf::Vector2f(1, 1));
 	bool selection_area_is_active = false;
 	
-	sf::Text item_name_text;
+	sf::Text item_name_text;  // Item name when hovering over it
 	item_name_text.setCharacterSize(16);
 	item_name_text.setFillColor(sf::Color(0, 0, 0));
 	item_name_text.setFont(GLOBAL_FONT);
+
+	sf::RectangleShape item_name_background; // Background of the name of the item when you hover over it
+	item_name_background.setFillColor(sf::Color(200, 200, 200));
+
+	sf::Text number_of_open_items;
+	number_of_open_items.setCharacterSize(14);
+	number_of_open_items.setFillColor(sf::Color(0, 0, 0));
+	number_of_open_items.setFont(GLOBAL_FONT);
+	number_of_open_items.setPosition(5, ITEM_DIMENSIONS*2+5);
+	// The string will be set after the startup elements appear
+
+	int item_list_page = 0;
 
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);
 	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
 	element_list_background.setSize(sf::Vector2f(WINDOW_W, ITEM_DIMENSIONS*2));
-
-	int item_list_page = 0;
-
-	sf::RectangleShape item_name_background;
-	item_name_background.setFillColor(sf::Color(200, 200, 200));
 
 	/* Spawn of starting elements */
 	// A slightly modified code for the appearance of new elements.
@@ -81,6 +92,8 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 	
+	number_of_open_items.setString("Number of open elements: " + std::to_string(Element::get_open_elements_num()) + " / " + std::to_string(items_list.size()));
+
 	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H, 32), "AlchemyGame", sf::Style::Close);
 	window.setFramerateLimit(30);
 
@@ -244,7 +257,7 @@ int main(int argc, char const *argv[])
 		// setting real-time size of selection area
 		if (selection_area_is_active)
 		{
-				// protection against access to the area of opened elements
+			// protection against access to the area of opened elements
 			float temp_w = cursor_position.x - selection_area_rect.getPosition().x;
 			float temp_h = 0;
 			temp_h = (cursor_position.y > BORDERS.top) ? cursor_position.y - selection_area_rect.getPosition().y : BORDERS.top - selection_area_rect.getPosition().y;
@@ -303,10 +316,13 @@ int main(int argc, char const *argv[])
 					}
 				}
 			}
+			number_of_open_items.setString("Number of open elements: " + std::to_string(Element::get_open_elements_num()) + " / " + std::to_string(items_list.size()));
 			items_to_spawn.clear();
 		}
 
 		window.clear(sf::Color(255, 255, 255));
+
+		window.draw(number_of_open_items);
 
 		int32_t temp_render_element_name_num = -1; // Render the element name
 		bool temp_contains = false;

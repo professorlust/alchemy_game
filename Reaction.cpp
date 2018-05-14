@@ -22,7 +22,7 @@ Reaction::~Reaction()
 
 }
 
-bool Reaction::check_reaction(std::vector<Element*> input_reagents, bool is_sorted)
+bool Reaction::check_reaction(std::vector<Element*> input_reagents, bool is_sorted) const
 {
 	if (this->input_reagents.size() != input_reagents.size()) 
 	{
@@ -40,7 +40,7 @@ bool Reaction::check_reaction(std::vector<Element*> input_reagents, bool is_sort
 	}
 }
 
-bool Reaction::check_reaction(std::vector<unsigned int> input_reagents, bool is_sorted)
+bool Reaction::check_reaction(std::vector<unsigned int> input_reagents, bool is_sorted) const
 {
 	if (!is_sorted) 
 	{
@@ -54,7 +54,12 @@ void Reaction::set_description(sf::String description)
 	this->description = description;
 }
 
-std::vector<unsigned int> Reaction::get_output_items()
+std::vector<unsigned int> Reaction::get_output_items() const
 {
 	return output_reagents;
+}
+
+std::vector<unsigned int> Reaction::get_input_items() const
+{
+	return input_reagents;
 }

@@ -30,17 +30,17 @@ void Game::load_game(std::vector<Element*> &global_element_list, std::vector<Rea
 	global_started_elements = started_elements;
 }
 
-unsigned int Game::get_number_of_elements()
+unsigned int Game::get_number_of_elements() const
 {
 	return number_of_elements;
 }
 
-unsigned int Game::get_number_of_reactions()
+unsigned int Game::get_number_of_reactions() const
 {
 	return number_of_reactions;
 }
 
-void Game::console_show_information()
+void Game::console_show_information() const
 {
 	std::cout << "Information about mode: " << name.toAnsiString() << std::endl
 	<< "Author's name: " << author.toAnsiString() << std::endl
@@ -49,12 +49,13 @@ void Game::console_show_information()
 	<< "Description: " << description.toAnsiString() << std::endl;
 }
 
-void Game::file_show_full_information()
+void Game::file_show_full_information() const
 {
 	std::ofstream output_file;
 	output_file.open(name.toAnsiString() + "_full_information.txt");
 
 	std::string divider = "= = = = = = = = = = = = = = = = = = = = =";
+	
 	output_file << "Information about mode " << name.toAnsiString() << std::endl
 	<< "Author's name: " << author.toAnsiString() << std::endl
 	<< "Description: " << std::endl 
@@ -71,8 +72,48 @@ void Game::file_show_full_information()
 	}
 	output_file << divider << std::endl;
 
-	output_file << "List of reactions: " << std::endl
-	<< "COMING SOON!";
+	output_file << "List of reactions: " << std::endl;
+	for (int i = 0; i < reactions_list.size(); ++i)
+	{
+		std::vector<unsigned int> input_items = reactions_list[i].get_input_items();
+		std::vector<unsigned int> output_items = reactions_list[i].get_output_items();
+
+		output_file << i+1 << ") ";
+		/* Output of input reagents */
+		for (int j = 0; j < input_items.size(); ++j)
+		{
+			for (int n = 0; n < element_list.size(); ++n)
+			{
+				if (input_items[j] == element_list[n].get_id())
+				{
+					output_file << element_list[n].get_name().toAnsiString();
+					if (j != input_items.size()-1)
+					{
+						output_file << " + ";
+					}
+				}
+			}
+		}
+		output_file << " = ";
+
+		/* Output of output reagents. Strange phrase */
+		for (int j = 0; j < output_items.size(); ++j)
+		{
+			for (int n = 0; n < element_list.size(); ++n)
+			{
+				if (output_items[j] == element_list[n].get_id())
+				{
+					output_file << element_list[n].get_name().toAnsiString();
+					if (j != output_items.size()-1)
+					{
+						output_file << " + ";
+					}
+				}
+			}
+		}
+		output_file << std::endl;
+	}
+
 	output_file.close();
 }
 

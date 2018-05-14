@@ -33,16 +33,24 @@ void Config::load_from_file()
 			if (step == 0)
 			{
 				if (buffer[i] != ' ') 
+				{
 					argument += buffer[i];
+				}
 				else 
+				{
 					step++;
+				}
 			}
 			else if (step == 1)
 			{
-				if (buffer[i] != ' ') 
+				if (buffer[i] != ' ')
+				{
 					operator_ += buffer[i];
-				else 
+				}
+				else
+				{
 					step++;
+				}
 			}
 			else if (step == 2) 
 			{
@@ -61,9 +69,13 @@ void Config::load_from_file()
 			int window_w = atoi(value.c_str());
 
 			if (window_w > 64)
+			{
 				WINDOW_W = window_w;
+			}
 			else
+			{
 				WINDOW_W = 64;
+			}
 
 			width_loaded = true;
 		}
@@ -72,9 +84,13 @@ void Config::load_from_file()
 			int window_h = atoi(value.c_str());
 
 			if (window_h > 96)
+			{
 				WINDOW_H = window_h;
+			}
 			else
+			{
 				WINDOW_H = 96;
+			}
 
 			height_loaded = true;
 		}
