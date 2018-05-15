@@ -124,3 +124,13 @@ void Game::open_all_items(std::vector<Element*> &items)
 		Element::set_opened(*items[i]);
 	}
 }
+
+void Game::save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map)
+{
+
+}
+
+void Game::load_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map)
+{
+
+}

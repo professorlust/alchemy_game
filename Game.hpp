@@ -40,7 +40,7 @@ public:
 	void console_show_information() const;
 	void file_show_full_information() const;
 
-	static void save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map) const;
-	static void load_game();
+	static void save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map);
+	static void load_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map);
 };
 #endif
