@@ -10,7 +10,8 @@
 #include "Element.hpp"
 #include "Reaction.hpp"
 #include "Config.hpp"
-#include "standart_games\standart_games.hpp"
+#include "standart_games/standart_games.hpp"
+#include "save_and_load.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -27,7 +28,6 @@ int main(int argc, char const *argv[])
 
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	game->file_show_full_information();
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -58,6 +58,8 @@ int main(int argc, char const *argv[])
 	// The string will be set after the startup elements appear
 
 	int item_list_page = 0;
+
+	load_game(items_list, items_on_map, "game_save");
 
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);
@@ -111,6 +113,7 @@ int main(int argc, char const *argv[])
 			{
 				case sf::Event::Closed:
 				{
+					save_game(items_list, items_on_map);
 					window.close();
 					break;
 				}

@@ -40,6 +40,11 @@ unsigned int Game::get_number_of_reactions() const
 	return number_of_reactions;
 }
 
+sf::String Game::get_game_name() const
+{
+	return name;
+}
+
 void Game::console_show_information() const
 {
 	std::cout << "Information about mode: " << name.toAnsiString() << std::endl
@@ -123,14 +128,4 @@ void Game::open_all_items(std::vector<Element*> &items)
 	{
 		Element::set_opened(*items[i]);
 	}
-}
-
-void Game::save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map)
-{
-
-}
-
-void Game::load_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map)
-{
-
 }
