@@ -17,15 +17,11 @@ void Game::load_game(std::vector<Element*> &global_element_list, std::vector<Rea
 
 	// Copying elements to main::element_list
 	for (int i = 0; i < element_list.size(); ++i)
-	{
 		global_element_list.push_back(new Element(element_list[i]));
-	}
 
 	// Copying reactions to main::reactions_list
 	for (int i = 0; i < reactions_list.size(); ++i)
-	{
 		global_reactions_list.push_back(new Reaction(reactions_list[i]));
-	}
 
 	global_started_elements = started_elements;
 }
@@ -47,10 +43,10 @@ sf::String Game::get_game_name() const
 
 void Game::console_show_information() const
 {
-	std::cout << "Information about mode: " << name.toAnsiString() << std::endl
-	<< "Author's name: " << author.toAnsiString() << std::endl
-	<< "Number of elements: " << number_of_elements << std::endl
-	<< "Number of reactions: " << number_of_reactions << std::endl
+	std::cout << name.toAnsiString() << std::endl
+	<< "Author: " << author.toAnsiString() << std::endl
+	<< number_of_elements << " element(s)" << std::endl
+	<< number_of_reactions << " reaction(s)" << std::endl
 	<< "Description: " << description.toAnsiString() << std::endl;
 }
 
@@ -60,24 +56,23 @@ void Game::file_show_full_information() const
 	output_file.open(name.toAnsiString() + "_full_information.txt");
 
 	std::string divider = "= = = = = = = = = = = = = = = = = = = = =";
-	
-	output_file << "Information about mode " << name.toAnsiString() << std::endl
-	<< "Author's name: " << author.toAnsiString() << std::endl
+
+	output_file << name.toAnsiString() << std::endl
+	<< "Author: " << author.toAnsiString() << std::endl
 	<< "Description: " << std::endl 
 	<< description.toAnsiString() << std::endl
 	<< std::endl
-	<< "Number of elements: " << number_of_elements << std::endl
-	<< "Number of reactions: " << number_of_reactions << std::endl
+	<< number_of_elements << " element(s)" << std::endl
+	<< number_of_reactions << " reaction(s)" << std::endl
 	<< divider << std::endl;
 
-	output_file << "List of elements: " << std::endl;
+	output_file << "Elements: " << std::endl;
 	for (int i = 0; i < element_list.size(); ++i)
-	{
 		output_file << i+1 << ") " << element_list[i].get_name().toAnsiString() << std::endl;
-	}
+
 	output_file << divider << std::endl;
 
-	output_file << "List of reactions: " << std::endl;
+	output_file << "Reactions: " << std::endl;
 	for (int i = 0; i < reactions_list.size(); ++i)
 	{
 		std::vector<unsigned int> input_items = reactions_list[i].get_input_items();
@@ -93,9 +88,7 @@ void Game::file_show_full_information() const
 				{
 					output_file << element_list[n].get_name().toAnsiString();
 					if (j != input_items.size()-1)
-					{
 						output_file << " + ";
-					}
 				}
 			}
 		}
@@ -110,9 +103,7 @@ void Game::file_show_full_information() const
 				{
 					output_file << element_list[n].get_name().toAnsiString();
 					if (j != output_items.size()-1)
-					{
 						output_file << " + ";
-					}
 				}
 			}
 		}
@@ -125,7 +116,5 @@ void Game::file_show_full_information() const
 void Game::open_all_items(std::vector<Element*> &items)
 {
 	for (int i = 0; i < items.size(); ++i)
-	{
 		Element::set_opened(*items[i]);
-	}
 }
