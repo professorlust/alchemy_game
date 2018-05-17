@@ -174,9 +174,7 @@ int main(int argc, char const *argv[])
 					for (int i = 0; i < items_on_map.size(); ++i)
 					{
 						if (items_on_map[i]->toggle_move()) 
-						{
 							break;
-						}
 					}
 
 					if (selection_area_is_active)
@@ -217,7 +215,9 @@ int main(int argc, char const *argv[])
 									}
 								}
 							}
-							if (was_a_reaction) break; // for (int i = 0; i < items_on_map.size(); ++i)
+
+							if (was_a_reaction) 
+								break; // for (int i = 0; i < items_on_map.size(); ++i)
 						}
 					}
 
@@ -230,30 +230,25 @@ int main(int argc, char const *argv[])
 				{
 					int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
 
-					if ( (event.key.code == sf::Keyboard::W) ||
+					if ((event.key.code == sf::Keyboard::W) ||
 						(event.key.code == sf::Keyboard::PageUp) ||
-						(event.key.code == sf::Keyboard::Up) )
+						(event.key.code == sf::Keyboard::Up))
 					{
 						if (number_of_items_in_row*(item_list_page+1) < Element::get_open_elements_num())
-						{
 							item_list_page++;
-						}
 					}
 					else if ((event.key.code == sf::Keyboard::S) ||
 						(event.key.code == sf::Keyboard::PageDown) ||
 						(event.key.code == sf::Keyboard::Down) )
 					{
 						if (item_list_page > 0)
-						{
 							item_list_page--;
-						}
 					}
 				}
 
 				default:
-				{
 					break;
-				} // end of default
+
 			} // end of switch
 		} // end of while(poolEvent);
 
@@ -267,6 +262,7 @@ int main(int argc, char const *argv[])
 
 			selection_area_rect.setSize(sf::Vector2f(temp_w, temp_h));
 		}
+
 		// Check reactions
 		if (reaction_elements_IDs.size() > 0)
 		{
@@ -282,17 +278,15 @@ int main(int argc, char const *argv[])
 				}
 			}
 			reaction_elements_IDs.clear();
-			if (!was_a_reaction) items_to_erase.clear();
+			if (!was_a_reaction) 
+				items_to_erase.clear();
 		}
 		// Removal of elements after the reaction
 		if (items_to_erase.size() > 0)
 		{
 			std::sort(items_to_erase.begin(), items_to_erase.end());
 			for (int i = 0; i < items_to_erase.size(); ++i)
-			{
-				items_on_map.erase(
-					items_on_map.begin() + items_to_erase[i] - i);
-			}
+				items_on_map.erase(items_on_map.begin() + items_to_erase[i] - i);
 			items_to_erase.clear();
 		}
 		// The spawn of new elements
@@ -358,9 +352,7 @@ int main(int argc, char const *argv[])
 		}
 
 		if (selection_area_is_active) 
-		{
 			window.draw(selection_area_rect);
-		}
 
 		window.draw(element_list_background);
 

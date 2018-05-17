@@ -23,7 +23,7 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, const
 {
 	has_image_ = false;
 
-	rect.left = rect.left = 0;
+	rect.left = rect.top = 0;
 	rect.width = name.getSize()*10;
 	rect.height = 16;
 
@@ -86,9 +86,7 @@ Element::~Element()
 void Element::render(sf::RenderWindow &window)
 {
 	if (has_image_)
-	{
 		window.draw(sprite);
-	}
 	else
 	{
 		window.draw(background);
@@ -115,13 +113,11 @@ void Element::set_position(sf::Vector2f coordinates)
 	rect.left = coordinates.x;
 	rect.top = coordinates.y;
 	if (has_image_)
-	{
-		sprite.setPosition(coordinates.x, coordinates.y);
-	}
+		sprite.setPosition(rect.left, rect.top);
 	else
 	{
-		background.setPosition(coordinates.x, coordinates.y);
-		text_name.setPosition(coordinates.x, coordinates.y);
+		background.setPosition(rect.left, rect.top);
+		text_name.setPosition(rect.left, rect.top);
 	}
 }
 
@@ -135,9 +131,7 @@ void Element::update(sf::Vector2f coordinates, float time)
 		rect.left = new_x;
 		rect.top = new_y;
 		if (has_image_)
-		{
 			sprite.setPosition(rect.left, rect.top);
-		}
 		else
 		{
 			background.setPosition(rect.left, rect.top);
@@ -153,7 +147,8 @@ bool Element::toggle_move()
  		is_move = false;
  		return true;
  	}
- 	else return false;
+
+	return false;
 }
 
 bool Element::toggle_move(sf::Vector2f cursor_position)
@@ -165,7 +160,8 @@ bool Element::toggle_move(sf::Vector2f cursor_position)
 		is_move = true;
 		return true;
 	}
-	else return false;
+
+	return false;
 }
 
 
@@ -183,13 +179,11 @@ void Element::set_position_hard(sf::Vector2f coordinates)
 	rect.left = coordinates.x;
 	rect.top = coordinates.y;
 	if (has_image_)
-	{
-		sprite.setPosition(coordinates.x, coordinates.y);
-	}
+		sprite.setPosition(rect.left, rect.top);
 	else
 	{
-		background.setPosition(coordinates.x, coordinates.y);
-		text_name.setPosition(coordinates.x, coordinates.y);
+		background.setPosition(rect.left, rect.top);
+		text_name.setPosition(rect.left, rect.top);
 	}
 }
 
