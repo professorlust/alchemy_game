@@ -3,8 +3,9 @@
 
 #include <fstream>
 #include <string>
-#include "defines.hpp"
+#include <algorithm>
 #include <iostream>
+#include "defines.hpp"
 
 class Config
 {

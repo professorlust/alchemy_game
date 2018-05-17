@@ -31,9 +31,7 @@ int main(int argc, char const *argv[])
 	//game->open_all_items(items_list);
 	bool save_game_loaded = load_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
-	{
 		items_to_spawn.clear();
-	}
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -360,7 +358,7 @@ int main(int argc, char const *argv[])
 
 		window.draw(element_list_background);
 
-		/* Top panel render */
+		// Top panel render 
 		{
 			int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
 
@@ -370,7 +368,7 @@ int main(int argc, char const *argv[])
 
 			for (int i = first_item, x = 0, y = 0; 
 				i < items_list.size() && render_number < number_of_render_items; 
-				++i) // For readability, the line is divided into three lines
+				++i)
 			{
 				if (items_list[i]->is_opened() &&
 					!items_list[i]->is_static())

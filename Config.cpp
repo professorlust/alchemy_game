@@ -1,5 +1,4 @@
 #include "Config.hpp"
-#include <algorithm>
 
 Config::Config(std::string file_p)
 {
@@ -63,7 +62,7 @@ void Config::load_from_file()
 		else if (argument == "height" & !height_loaded)
 		{
 			int window_h = atoi(value.c_str());
-			WINDOW_H = std::max(96, window_h);
+			WINDOW_H = std::max(ITEM_DIMENSIONS*3, window_h);
 
 			height_loaded = true;
 		}

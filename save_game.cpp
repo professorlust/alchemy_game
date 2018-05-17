@@ -8,9 +8,7 @@ void save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_
 	for (int i = 0; i < items_list.size(); ++i)
 	{
 		if (items_list[i]->is_opened())
-		{
 			save_file << items_list[i]->get_id() << " ";
-		}
 	}
 	save_file << std::endl;
 

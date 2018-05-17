@@ -6,7 +6,7 @@ Element::Element(sf::Texture* texture, sf::String name, sf::String description, 
 	sprite.setTexture(*texture);
 	has_image_ = true;
 
-	rect.left = rect.left = 0;
+	rect.left = rect.top = 0;
 	rect.height = rect.width = ITEM_DIMENSIONS;
 
 	item_color = item_color_;
