@@ -28,6 +28,12 @@ int main(int argc, char const *argv[])
 
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
+	//game->open_all_items(items_list);
+	bool save_game_loaded = load_game(items_list, items_on_map, "game_save");
+	if (save_game_loaded)
+	{
+		items_to_spawn.clear();
+	}
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -58,8 +64,6 @@ int main(int argc, char const *argv[])
 	// The string will be set after the startup elements appear
 
 	int item_list_page = 0;
-
-	load_game(items_list, items_on_map, "game_save");
 
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);
@@ -198,7 +202,7 @@ int main(int argc, char const *argv[])
 
 						for (int i = 0; i < items_on_map.size(); ++i)
 						{
-							if (i != selected_item & // Protection against checking the intersection with yourself
+							if (i != selected_item && // Protection against checking the intersection with yourself
 								items_on_map[selected_item]->check_collision(items_on_map[i]->get_rect()))
 							{
 								temp_reagents[1] = items_on_map[i]->get_id();
@@ -234,15 +238,15 @@ int main(int argc, char const *argv[])
 						(event.key.code == sf::Keyboard::PageUp) ||
 						(event.key.code == sf::Keyboard::Up))
 					{
-						if (number_of_items_in_row*(item_list_page+1) < Element::get_open_elements_num())
-							item_list_page++;
+						if (item_list_page > 0)
+						  item_list_page--;
 					}
 					else if ((event.key.code == sf::Keyboard::S) ||
 						(event.key.code == sf::Keyboard::PageDown) ||
 						(event.key.code == sf::Keyboard::Down) )
 					{
-						if (item_list_page > 0)
-							item_list_page--;
+						if (number_of_items_in_row*(item_list_page+1) < Element::get_open_elements_num())
+							item_list_page++;
 					}
 				}
 
@@ -299,7 +303,7 @@ int main(int argc, char const *argv[])
 			{
 				for (int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
 				{
-					if (items_to_spawn[i] == items_list[j]->get_id() &
+					if (items_to_spawn[i] == items_list[j]->get_id() &&
 						!items_list[j]->is_static())
 					{
 						angle += 6.28/number;
@@ -328,7 +332,7 @@ int main(int argc, char const *argv[])
 			items_on_map[i]->update(cursor_position, time);
 			items_on_map[i]->render(window);
 
-			if (items_on_map[i]->rect_contains_cursor(cursor_position) &
+			if (items_on_map[i]->rect_contains_cursor(cursor_position) &&
 			   (items_on_map[i]->has_image()) )
 			{
 				temp_contains = true;
@@ -365,10 +369,10 @@ int main(int argc, char const *argv[])
 			render_number = 0;
 
 			for (int i = first_item, x = 0, y = 0; 
-				i < items_list.size() & render_number < number_of_render_items; 
+				i < items_list.size() && render_number < number_of_render_items; 
 				++i) // For readability, the line is divided into three lines
 			{
-				if (items_list[i]->is_opened() &
+				if (items_list[i]->is_opened() &&
 					!items_list[i]->is_static())
 				{
 					x = (render_number < number_of_items_in_row) ? render_number*ITEM_DIMENSIONS : (render_number-number_of_items_in_row)*ITEM_DIMENSIONS;

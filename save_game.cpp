@@ -17,6 +17,6 @@ void save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_
 	/* Saving information about items on the map */
 	for (int i = 0; i < items_on_map.size(); ++i)
 	{
-		save_file << items_list[i]->get_id() << " " << items_on_map[i]->get_rect().left << " " << items_on_map[i]->get_rect().top << std::endl;
+		save_file << items_on_map[i]->get_id() << " " << items_on_map[i]->get_rect().left << " " << items_on_map[i]->get_rect().top << std::endl;
 	}
 }
