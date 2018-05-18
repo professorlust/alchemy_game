@@ -77,6 +77,16 @@ void Charodey::initialization_textures()
 	textures[46]->loadFromFile("standart_games_sp/charodey/moss.png");
 	textures[47]->loadFromFile("standart_games_sp/charodey/fern.png");
 	textures[48]->loadFromFile("standart_games_sp/charodey/steam_boiler.png");
+	textures[49]->loadFromFile("standart_games_sp/charodey/aquarium.png");
+	textures[50]->loadFromFile("standart_games_sp/charodey/worm.png");
+	textures[51]->loadFromFile("standart_games_sp/charodey/beetle.png");
+	textures[52]->loadFromFile("standart_games_sp/charodey/butterfly.png");
+	textures[53]->loadFromFile("standart_games_sp/charodey/seashells.png");
+	textures[54]->loadFromFile("standart_games_sp/charodey/fish.png");
+	textures[55]->loadFromFile("standart_games_sp/charodey/river.png");
+	textures[56]->loadFromFile("standart_games_sp/charodey/cancer.png");
+	textures[57]->loadFromFile("standart_games_sp/charodey/hourglass.png");
+	textures[58]->loadFromFile("standart_games_sp/charodey/scarab.png");
 	}
 
 void Charodey::initialization_elements()
@@ -131,6 +141,16 @@ void Charodey::initialization_elements()
 	element_list.emplace_back(textures[47], "Fern", "", 48);
 	element_list.emplace_back(textures[48], "Steam boiler", "", 49);
 	element_list.emplace_back("Dirt", "", 50, EARTH_COLOR);
+	element_list.emplace_back(textures[49], "Aquarium", "", 51);
+	element_list.emplace_back(textures[50], "Worm", "", 52);
+	element_list.emplace_back(textures[51], "Beetle", "", 53);
+	element_list.emplace_back(textures[52], "Butterfly", "", 54);
+	element_list.emplace_back(textures[53], "Seashells", "", 55);
+	element_list.emplace_back(textures[54], "Fish", "", 56);
+	element_list.emplace_back(textures[55], "River", "", 57);
+	element_list.emplace_back(textures[56], "Cancer", "", 58);
+	element_list.emplace_back(textures[57], "Hourglass", "", 59);
+	element_list.emplace_back(textures[58], "Scarab", "", 60);
 }
 
 void Charodey::initialization_reactions()
@@ -187,6 +207,16 @@ void Charodey::initialization_reactions()
 	reactions_list.push_back(Reaction({6, 47}, {48}));  // swamp+moss=fern
 	reactions_list.push_back(Reaction({10, 33}, {49}));  // steam+metal=steam boiler
 	reactions_list.push_back(Reaction({2, 16}, {50}));  // water+dust=dirt
+	reactions_list.push_back(Reaction({2, 12}, {51}));  // water+glass=aquarium
+	reactions_list.push_back(Reaction({3, 41}, {52}));  // earth+plankron=worm
+	reactions_list.push_back(Reaction({3, 52}, {53}));  // earth+worm=beetle
+	reactions_list.push_back(Reaction({4, 52}, {54}));  // air+worm=butterfly
+	reactions_list.push_back(Reaction({8, 41}, {55}));  // stone+seashells=butterfly
+	reactions_list.push_back(Reaction({20, 41}, {56}));  // bacteria+plankton=fish
+	reactions_list.push_back(Reaction({2, 25}, {57}));  // water+lake=river
+	reactions_list.push_back(Reaction({41, 57}, {58}));  // plankton+river=cancer
+	reactions_list.push_back(Reaction({9, 12}, {59}));  // sand+glass=hourglass
+	reactions_list.push_back(Reaction({17, 53}, {60}));  // desert+beetle=scarab
 }
 
 void Charodey::initialization_started_elements()
