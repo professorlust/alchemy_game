@@ -34,7 +34,7 @@ public:
 	void load_game(std::vector<Element*> &global_element_list, std::vector<Reaction*> &global_reactions_list, std::vector<unsigned int> &global_started_elements);
 	void open_all_items(std::vector<Element*> &items);
 
-	/* Methods for obtaining data. All methods are CONST */	
+	/* Methods for obtaining data. All methods are CONST */
 	unsigned int get_number_of_elements() const;
 	unsigned int get_number_of_reactions() const;
 	void console_show_information() const;

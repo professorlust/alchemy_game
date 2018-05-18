@@ -49,7 +49,7 @@ void Config::load_from_file()
 		if (argument == "font" & !font_loaded)
 		{
 			if (!GLOBAL_FONT.loadFromFile(value)) // Protection against missing font
-				GLOBAL_FONT.loadFromFile("lucon.ttf"); 
+				GLOBAL_FONT.loadFromFile("lucon.ttf");
 			font_loaded = true;
 		}
 		else if (argument == "width" & !width_loaded)

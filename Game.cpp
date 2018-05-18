@@ -2,12 +2,12 @@
 
 Game::Game()
 {
-	
+
 }
 
 Game::~Game()
 {
-	
+
 }
 
 void Game::load_game(std::vector<Element*> &global_element_list, std::vector<Reaction*> &global_reactions_list, std::vector<unsigned int> &global_started_elements)
@@ -59,7 +59,7 @@ void Game::file_show_full_information() const
 
 	output_file << name.toAnsiString() << std::endl
 	<< "Author: " << author.toAnsiString() << std::endl
-	<< "Description: " << std::endl 
+	<< "Description: " << std::endl
 	<< description.toAnsiString() << std::endl
 	<< std::endl
 	<< number_of_elements << " element(s)" << std::endl

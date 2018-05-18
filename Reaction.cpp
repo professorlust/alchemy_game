@@ -2,7 +2,7 @@
 
 Reaction::Reaction(std::vector<unsigned int> input_reagents, std::vector<unsigned int> output_reagents, bool is_sorted)
 {
-	if (!is_sorted) 
+	if (!is_sorted)
 		std::sort(input_reagents.begin(), input_reagents.end());
 	this->input_reagents = input_reagents;
 	this->output_reagents = output_reagents;

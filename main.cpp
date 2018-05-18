@@ -12,15 +12,27 @@
 #include "Config.hpp"
 #include "standart_games/standart_games.hpp"
 #include "save_and_load.hpp"
+#include "console_commands.hpp"
 
 int main(int argc, char const *argv[])
 {
 	Config config("Config.ini");
 	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
+	bool debug_commands_is_active = false;
+
+	for (int i = 0; i < argc; ++i)
+	{
+		std::string arg = argv[i];
+		if (arg == "-debug_commands")
+		{
+			std::cout << "The developer's commands are activated. Press ~ to start typing" << std::endl;
+			debug_commands_is_active = true;
+		}
+	}
 
 	std::vector<Element*> items_list; // All lists is loaded from the Game*
 	std::vector<Element*> items_on_map;
-	std::vector<Reaction*> reactions_list; 
+	std::vector<Reaction*> reactions_list;
 	std::vector<unsigned int> reaction_elements_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
@@ -45,7 +57,7 @@ int main(int argc, char const *argv[])
 	selection_area_rect.setFillColor(sf::Color(0, 0, 150, 150)); // Light blue
 	selection_area_rect.setSize(sf::Vector2f(1, 1));
 	bool selection_area_is_active = false;
-	
+
 	sf::Text item_name_text;  // Item name when hovering over it
 	item_name_text.setCharacterSize(16);
 	item_name_text.setFillColor(sf::Color(0, 0, 0));
@@ -62,6 +74,7 @@ int main(int argc, char const *argv[])
 	// The string will be set after the startup elements appear
 
 	int item_list_page = 0;
+	int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
 
 	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
 	element_list_background.setPosition(0, 0);
@@ -83,7 +96,7 @@ int main(int argc, char const *argv[])
 				if (items_to_spawn[i] == items_list[j]->get_id())
 				{
 					angle += 6.28/number;
-					spawn_x = spawn_x_center + R*cos(angle), 
+					spawn_x = spawn_x_center + R*cos(angle),
 					spawn_y = spawn_y_center + R*sin(angle);
 
 					Element::set_opened(*items_list[j]);
@@ -95,7 +108,7 @@ int main(int argc, char const *argv[])
 		}
 		items_to_spawn.clear();
 	}
-	
+
 	number_of_open_items.setString("Number of open elements: " + std::to_string(Element::get_open_elements_num()) + " / " + std::to_string(items_list.size()));
 
 	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H, 32), "AlchemyGame", sf::Style::Close);
@@ -126,9 +139,13 @@ int main(int argc, char const *argv[])
 					{
 						if (cursor_position.y < BORDERS.top) // Hit an array of elements
 						{
-							for (int i = 0; i < items_list.size(); ++i)
+							for (int i = item_list_page*number_of_items_in_row;
+							i < items_list.size();
+							++i)
 							{
-								if (items_list[i]->get_rect().contains(cursor_position.x, cursor_position.y))
+								if (items_list[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
+									items_list[i]->is_opened() &&
+									!items_list[i]->is_static())
 								{
 									float spawn_x = cursor_position.x;
 									float spawn_y = BORDERS.top; // BORDERS.top - items_list[i]->get_rect().top;
@@ -146,7 +163,7 @@ int main(int argc, char const *argv[])
 							{
 								if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
-									if (items_on_map[i]->toggle_move(cursor_position)) 
+									if (items_on_map[i]->toggle_move(cursor_position))
 									{
 										selection_area_is_active = false;
 										selected_item = i;
@@ -175,7 +192,7 @@ int main(int argc, char const *argv[])
 				{
 					for (int i = 0; i < items_on_map.size(); ++i)
 					{
-						if (items_on_map[i]->toggle_move()) 
+						if (items_on_map[i]->toggle_move())
 							break;
 					}
 
@@ -218,7 +235,7 @@ int main(int argc, char const *argv[])
 								}
 							}
 
-							if (was_a_reaction) 
+							if (was_a_reaction)
 								break; // for (int i = 0; i < items_on_map.size(); ++i)
 						}
 					}
@@ -230,7 +247,6 @@ int main(int argc, char const *argv[])
 
 				case sf::Event::KeyReleased:
 				{
-					int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
 
 					if ((event.key.code == sf::Keyboard::W) ||
 						(event.key.code == sf::Keyboard::PageUp) ||
@@ -280,7 +296,7 @@ int main(int argc, char const *argv[])
 				}
 			}
 			reaction_elements_IDs.clear();
-			if (!was_a_reaction) 
+			if (!was_a_reaction)
 				items_to_erase.clear();
 		}
 		// Removal of elements after the reaction
@@ -305,7 +321,7 @@ int main(int argc, char const *argv[])
 						!items_list[j]->is_static())
 					{
 						angle += 6.28/number;
-						spawn_x = cursor_position.x + R*cos(angle), 
+						spawn_x = cursor_position.x + R*cos(angle),
 						spawn_y = cursor_position.y + R*sin(angle);
 
 						Element::set_opened(*items_list[j]);
@@ -326,7 +342,7 @@ int main(int argc, char const *argv[])
 		int32_t temp_render_element_name_num = -1; // Render the element name
 		bool temp_contains = false;
 		for (int i = items_on_map.size()-1; i >= 0; --i)
-		{   
+		{
 			items_on_map[i]->update(cursor_position, time);
 			items_on_map[i]->render(window);
 
@@ -353,21 +369,19 @@ int main(int argc, char const *argv[])
 			window.draw(item_name_text);
 		}
 
-		if (selection_area_is_active) 
+		if (selection_area_is_active)
 			window.draw(selection_area_rect);
 
 		window.draw(element_list_background);
 
-		// Top panel render 
+		// Top panel render
 		{
-			int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
-
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
 			render_number = 0;
 
-			for (int i = first_item, x = 0, y = 0; 
-				i < items_list.size() && render_number < number_of_render_items; 
+			for (int i = first_item, x = 0, y = 0;
+				i < items_list.size() && render_number < number_of_render_items;
 				++i)
 			{
 				if (items_list[i]->is_opened() &&
@@ -384,6 +398,11 @@ int main(int argc, char const *argv[])
 		} // end of unnamed namespace
 
 		window.display();
+
+		/* Activating development commands */
+		if (debug_commands_is_active &&
+			sf::Keyboard::isKeyPressed(sf::Keyboard::Tilde))
+				console_command(items_list, game);
 	}
 
 	return 0;

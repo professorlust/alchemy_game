@@ -28,7 +28,7 @@ Element::Element(sf::String name, sf::String description, unsigned int ID, const
 	rect.height = 16;
 
 	this->ID = ID;
-	this->name = name;	
+	this->name = name;
 
 	this->is_static_ = is_static;
 	is_opened_ = false;
@@ -80,7 +80,7 @@ Element::Element(const Element &element, sf::Vector2f coordinates)
 
 Element::~Element()
 {
-	
+
 }
 
 void Element::render(sf::RenderWindow &window)
@@ -125,7 +125,7 @@ void Element::update(sf::Vector2f coordinates, float time)
 {
 	if (is_move)
 	{
-		float new_x = coordinates.x - adjustment_x, 
+		float new_x = coordinates.x - adjustment_x,
 		      new_y = coordinates.y - adjustment_y;
 		check_out_the_field(&new_x, &new_y);
 		rect.left = new_x;

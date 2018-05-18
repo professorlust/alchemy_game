@@ -15,7 +15,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 
 	for (int i = 0; i < input_line.size(); ++i)
 	{
-		while (input_line[i] != ' ') // getting the item ID 
+		while (input_line[i] != ' ') // getting the item ID
 		{
 			buffer += input_line[i];
 			i++;
@@ -38,7 +38,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 	{
 		int i = 0;
 
-		while (input_line[i] != ' ') // getting the item ID 
+		while (input_line[i] != ' ') // getting the item ID
 		{
 			buffer += input_line[i];
 			i++;
@@ -47,7 +47,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 		int item_id = atoi(buffer.c_str());
 		buffer.clear();
 
-		while (input_line[i] != ' ') // getting the item ID 
+		while (input_line[i] != ' ') // getting the item ID
 		{
 			buffer += input_line[i];
 			i++;
@@ -56,7 +56,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 		int x = atoi(buffer.c_str());
 		buffer.clear();
 
-		while (input_line[i] != ' ') // getting the item ID 
+		while (input_line[i] != ' ') // getting the item ID
 		{
 			buffer += input_line[i];
 			i++;
@@ -70,7 +70,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 			if (item_id == items_list[j]->get_id())
 			{
 				items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(x, y)));
-			}	
+			}
 		}
 	}
 

@@ -17,7 +17,7 @@ public:
 	Reaction(std::vector<unsigned int> input_reagents, std::vector<unsigned int> output_reagents, bool is_sorted = true);
 	Reaction(const Reaction &reaction);
 	~Reaction();
-	
+
 	void set_description(sf::String description);
 
 	/* Methods for obtaining data. All methods are CONST */

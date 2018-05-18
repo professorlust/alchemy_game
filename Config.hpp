@@ -16,7 +16,7 @@ private:
 
 public:
 	Config(std::string file_p);
-	~Config();	
+	~Config();
 };
 
 #endif
