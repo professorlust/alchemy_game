@@ -4,9 +4,9 @@ class Charodey : public Game
 {
 private:
 	void initialization_textures();
-	void initialization_elements();
+	void initialization_items();
 	void initialization_reactions();
-	void initialization_started_elements();
+	void initialization_started_items();
 	
 public:
 	Charodey();

@@ -3,11 +3,11 @@
 Test_game::Test_game()
 {
 	initialization_textures();
-	initialization_elements();
+	initialization_items();
 	initialization_reactions();
-	initialization_started_elements();
+	initialization_started_items();
 
-	number_of_elements = element_list.size();
+	number_of_items = element_list.size();
 	number_of_reactions = reactions_list.size();
 
 	name = "Test_game";
@@ -20,7 +20,7 @@ void Test_game::initialization_textures()
 
 }
 
-void Test_game::initialization_elements()
+void Test_game::initialization_items()
 {
 	/* Demonstration of colors */
 	element_list.emplace_back("AIR_COLOR", "", 1, AIR_COLOR);
@@ -42,10 +42,10 @@ void Test_game::initialization_reactions()
 
 }
 
-void Test_game::initialization_started_elements()
+void Test_game::initialization_started_items()
 {
 	for (int i = 0; i < element_list.size(); ++i)
 	{
-		started_elements.push_back(element_list[i].get_id());
+		started_items.push_back(element_list[i].get_id());
 	}
 }

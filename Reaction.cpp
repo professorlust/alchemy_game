@@ -20,7 +20,7 @@ Reaction::~Reaction()
 
 }
 
-bool Reaction::check_reaction(std::vector<Element*> input_reagents, bool is_sorted) const
+bool Reaction::check_reaction(std::vector<Item*> input_reagents, bool is_sorted) const
 {
 	if (this->input_reagents.size() == input_reagents.size())
 	{

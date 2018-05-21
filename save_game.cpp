@@ -1,6 +1,6 @@
 #include "save_and_load.hpp"
 
-void save_game(std::vector<Element*> items_list, std::vector<Element*> items_on_map, std::string file_name)
+void save_game(std::vector<Item*> items_list, std::vector<Item*> items_on_map, std::string file_name)
 {
 	std::ofstream save_file(file_name);
 

@@ -1,6 +1,6 @@
 #include "save_and_load.hpp"
 
-bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_on_map, std::string file_name)
+bool load_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on_map, std::string file_name)
 {
 	std::ifstream save_file(file_name);
 	if (!save_file.is_open())
@@ -27,7 +27,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 		{
 			if (item_id == items_list[i]->get_id())
 			{
-				Element::set_opened(*items_list[i]);
+				Item::set_opened(*items_list[i]);
 			}
 		}
 		buffer.clear();
@@ -69,7 +69,7 @@ bool load_game(std::vector<Element*> &items_list, std::vector<Element*> &items_o
 		{
 			if (item_id == items_list[j]->get_id())
 			{
-				items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(x, y)));
+				items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(x, y)));
 			}
 		}
 	}

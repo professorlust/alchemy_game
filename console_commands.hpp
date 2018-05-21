@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "Element.hpp"
+#include "Item.hpp"
 #include "Game.hpp"
 
-void console_command(std::vector<Element*> &items_list, Game *game);
+void console_command(std::vector<Item*> &items_list, Game *game);
 
 #endif

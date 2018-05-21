@@ -3,11 +3,11 @@
 Charodey::Charodey()
 {
 	initialization_textures();
-	initialization_elements();
+	initialization_items();
 	initialization_reactions();
-	initialization_started_elements();
+	initialization_started_items();
 
-	number_of_elements = element_list.size();
+	number_of_items = element_list.size();
 	number_of_reactions = reactions_list.size();
 
 	name = "Charodey";
@@ -89,7 +89,7 @@ void Charodey::initialization_textures()
 	textures[58]->loadFromFile("standart_games_sp/charodey/scarab.png");
 	}
 
-void Charodey::initialization_elements()
+void Charodey::initialization_items()
 {
 	element_list.emplace_back(textures[0], "Fire", "", 1);
 	element_list.emplace_back(textures[1], "Water", "", 2);
@@ -219,10 +219,10 @@ void Charodey::initialization_reactions()
 	reactions_list.push_back(Reaction({17, 53}, {60}));  // desert+beetle=scarab
 }
 
-void Charodey::initialization_started_elements()
+void Charodey::initialization_started_items()
 {
-	started_elements.push_back(1);
-	started_elements.push_back(2);
-	started_elements.push_back(3);
-	started_elements.push_back(4);
+	started_items.push_back(1);
+	started_items.push_back(2);
+	started_items.push_back(3);
+	started_items.push_back(4);
 }

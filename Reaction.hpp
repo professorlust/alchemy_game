@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Element.hpp"
+#include "Item.hpp"
 
 class Reaction
 {
@@ -22,7 +22,7 @@ public:
 
 	/* Methods for obtaining data. All methods are CONST */
 	bool check_reaction(std::vector<unsigned int> input_reagents, bool is_sorted) const; // Validation reaction by Item IDs. Faster
-	bool check_reaction(std::vector<Element*> input_reagents, bool is_sorted) const; // Validation reaction by objects of Element class. Slower
+	bool check_reaction(std::vector<Item*> input_reagents, bool is_sorted) const; // Validation reaction by objects of Item class. Slower
 	std::vector<unsigned int> get_output_items() const;
 	std::vector<unsigned int> get_input_items() const;
 };

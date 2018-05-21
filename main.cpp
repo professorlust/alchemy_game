@@ -7,7 +7,7 @@
 #include <vector>
 #include <cmath>
 
-#include "Element.hpp"
+#include "Item.hpp"
 #include "Reaction.hpp"
 #include "Config.hpp"
 #include "standart_games/standart_games.hpp"
@@ -30,10 +30,10 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	std::vector<Element*> items_list; // All lists is loaded from the Game*
-	std::vector<Element*> items_on_map;
+	std::vector<Item*> items_list; // All lists is loaded from the Game*
+	std::vector<Item*> items_on_map;
 	std::vector<Reaction*> reactions_list;
-	std::vector<unsigned int> reaction_elements_IDs; // IDs of the elements that react in this frame
+	std::vector<unsigned int> reaction_items_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
@@ -76,10 +76,10 @@ int main(int argc, char const *argv[])
 	int item_list_page = 0;
 	int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
 
-	sf::RectangleShape element_list_background; // The rectangle for the array of open elements
-	element_list_background.setPosition(0, 0);
-	element_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
-	element_list_background.setSize(sf::Vector2f(WINDOW_W, ITEM_DIMENSIONS*2));
+	sf::RectangleShape items_list_background; // The rectangle for the array of open elements
+	items_list_background.setPosition(0, 0);
+	items_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
+	items_list_background.setSize(sf::Vector2f(WINDOW_W, ITEM_DIMENSIONS*2));
 
 	/* Spawn of starting elements */
 	// A slightly modified code for the appearance of new elements.
@@ -99,8 +99,8 @@ int main(int argc, char const *argv[])
 					spawn_x = spawn_x_center + R*cos(angle),
 					spawn_y = spawn_y_center + R*sin(angle);
 
-					Element::set_opened(*items_list[j]);
-					items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
+					Item::set_opened(*items_list[j]);
+					items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
 
 					break;
 				}
@@ -109,7 +109,7 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 
-	number_of_open_items.setString("Number of open elements: " + std::to_string(Element::get_open_elements_num()) + " / " + std::to_string(items_list.size()));
+	number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
 
 	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H, 32), "AlchemyGame", sf::Style::Close);
 	window.setFramerateLimit(30);
@@ -149,7 +149,7 @@ int main(int argc, char const *argv[])
 								{
 									float spawn_x = cursor_position.x;
 									float spawn_y = BORDERS.top; // BORDERS.top - items_list[i]->get_rect().top;
-									items_on_map.push_back(new Element(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
+									items_on_map.push_back(new Item(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
 									items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									selected_item = items_on_map.size()-1;
 									break;
@@ -202,7 +202,7 @@ int main(int argc, char const *argv[])
 						{
 							if (selection_area_rect.getGlobalBounds().intersects(items_on_map[i]->get_rect()))
 							{
-								reaction_elements_IDs.push_back(items_on_map[i]->get_id());
+								reaction_items_IDs.push_back(items_on_map[i]->get_id());
 								items_to_erase.push_back(i);
 							}
 						}
@@ -259,7 +259,7 @@ int main(int argc, char const *argv[])
 						(event.key.code == sf::Keyboard::PageDown) ||
 						(event.key.code == sf::Keyboard::Down) )
 					{
-						if (number_of_items_in_row*(item_list_page+1) < Element::get_open_elements_num())
+						if (number_of_items_in_row*(item_list_page+1) < Item::get_open_items_num())
 							item_list_page++;
 					}
 				}
@@ -282,20 +282,20 @@ int main(int argc, char const *argv[])
 		}
 
 		// Check reactions
-		if (reaction_elements_IDs.size() > 0)
+		if (reaction_items_IDs.size() > 0)
 		{
-			std::sort(reaction_elements_IDs.begin(), reaction_elements_IDs.end()); // sort the items_on_map
+			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end()); // sort the items_on_map
 
 			bool was_a_reaction = false;
 			for (int i = 0; i < reactions_list.size(); ++i)
 			{
-				if (reactions_list[i]->check_reaction(reaction_elements_IDs, true))
+				if (reactions_list[i]->check_reaction(reaction_items_IDs, true))
 				{
 					items_to_spawn = reactions_list[i]->get_output_items();
 					was_a_reaction = true;
 				}
 			}
-			reaction_elements_IDs.clear();
+			reaction_items_IDs.clear();
 			if (!was_a_reaction)
 				items_to_erase.clear();
 		}
@@ -324,14 +324,14 @@ int main(int argc, char const *argv[])
 						spawn_x = cursor_position.x + R*cos(angle),
 						spawn_y = cursor_position.y + R*sin(angle);
 
-						Element::set_opened(*items_list[j]);
-						items_on_map.push_back(new Element(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
+						Item::set_opened(*items_list[j]);
+						items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
 
 						break;
 					}
 				}
 			}
-			number_of_open_items.setString("Number of open elements: " + std::to_string(Element::get_open_elements_num()) + " / " + std::to_string(items_list.size()));
+			number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
 			items_to_spawn.clear();
 		}
 
@@ -339,42 +339,45 @@ int main(int argc, char const *argv[])
 
 		window.draw(number_of_open_items);
 
-		int32_t temp_render_element_name_num = -1; // Render the element name
-		bool temp_contains = false;
-		for (int i = items_on_map.size()-1; i >= 0; --i)
+		/* Items on map render */
 		{
-			items_on_map[i]->update(cursor_position, time);
-			items_on_map[i]->render(window);
-
-			if (items_on_map[i]->rect_contains_cursor(cursor_position) &&
-			   (items_on_map[i]->has_image()) )
+			int32_t temp_render_item_name_num = -1; // Render the element name
+			bool temp_contains = false;
+			for (int i = items_on_map.size()-1; i >= 0; --i)
 			{
-				temp_contains = true;
-				temp_render_element_name_num = i;
+				items_on_map[i]->update(cursor_position, time);
+				items_on_map[i]->render(window);
+
+				if (items_on_map[i]->rect_contains_cursor(cursor_position) &&
+				   (items_on_map[i]->has_image()) )
+				{
+					temp_contains = true;
+					temp_render_item_name_num = i;
+				}
 			}
-		}
 
-		if (temp_contains)
-		{
-			float temp_x = cursor_position.x + 15;
-			float temp_y = cursor_position.y + 10;
+			if (temp_contains)
+			{
+				float temp_x = cursor_position.x + 15;
+				float temp_y = cursor_position.y + 10;
 
-			item_name_background.setSize(sf::Vector2f(items_on_map[temp_render_element_name_num]->get_name().getSize()*10, 16));
-			item_name_background.setPosition(temp_x, temp_y);
+				item_name_background.setSize(sf::Vector2f(items_on_map[temp_render_item_name_num]->get_name().getSize()*10, 16));
+				item_name_background.setPosition(temp_x, temp_y);
 
-			item_name_text.setString(items_on_map[temp_render_element_name_num]->get_name());
-			item_name_text.setPosition(temp_x, temp_y);
+				item_name_text.setString(items_on_map[temp_render_item_name_num]->get_name());
+				item_name_text.setPosition(temp_x, temp_y);
 
-			window.draw(item_name_background);
-			window.draw(item_name_text);
-		}
+				window.draw(item_name_background);
+				window.draw(item_name_text);
+			}
 
-		if (selection_area_is_active)
-			window.draw(selection_area_rect);
+			if (selection_area_is_active)
+				window.draw(selection_area_rect);
 
-		window.draw(element_list_background);
-
-		// Top panel render
+			window.draw(items_list_background);
+		} // end of unnamed namespace
+		
+		/* Top panel render */
 		{
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
