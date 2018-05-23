@@ -11,7 +11,7 @@ class Game
 {
 protected:
 	std::vector<sf::Texture*> textures;
-	std::vector<Item> element_list;
+	std::vector<Item> items_list;
 	std::vector<Reaction> reactions_list;
 	std::vector<unsigned int> started_items;
 
@@ -32,7 +32,6 @@ public:
 	~Game();
 
 	void load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<unsigned int> &started_items_copy);
-	void open_all_items(std::vector<Item*> &items);
 
 	/* Methods for obtaining data. All methods are CONST */
 	unsigned int get_number_of_items() const;
@@ -40,5 +39,8 @@ public:
 	void console_show_information() const;
 	void file_show_full_information() const;
 	sf::String get_game_name() const;
+
+	/* Game management methods */
+	void open_all_items(std::vector<Item*> &items) const;
 };
 #endif

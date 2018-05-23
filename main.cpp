@@ -16,7 +16,7 @@
 
 int main(int argc, char const *argv[])
 {
-	Config config("Config.ini");
+	Config config;
 	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
 	bool debug_commands_is_active = false;
 
@@ -30,6 +30,10 @@ int main(int argc, char const *argv[])
 		}
 	}
 
+	bool autosaving_is_active = config.autosave();
+	float autosave_timer_max = config.get_autosave_timer();
+	float autosave_timer = 0;
+
 	std::vector<Item*> items_list; // All lists is loaded from the Game*
 	std::vector<Item*> items_on_map;
 	std::vector<Reaction*> reactions_list;
@@ -40,7 +44,6 @@ int main(int argc, char const *argv[])
 
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	//game->open_all_items(items_list);
 	bool save_game_loaded = load_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
@@ -48,9 +51,9 @@ int main(int argc, char const *argv[])
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
 	float FPS = 0; // Frames per second
-	int32_t selected_item = -1; // -1 == No item selected
 
 	sf::Vector2f cursor_position; // Cursor coordinates
+	int32_t selected_item = -1; // -1 == No item selected
 
 	sf::RectangleShape selection_area_rect; // The selection area when the left button is pressed
 	selection_area_rect.setPosition(-1, -1);
@@ -119,6 +122,14 @@ int main(int argc, char const *argv[])
 		cursor_position = window.mapPixelToCoords(sf::Mouse::getPosition(window)); // Getting cursor position
 		time = clock.getElapsedTime().asSeconds();
 		FPS = 1.0f / time; // Getting game FPS
+
+		autosave_timer += time;
+		if (autosave_timer >= autosave_timer_max)
+		{
+			save_game(items_list, items_on_map);
+			autosave_timer = 0;
+		}
+		
 		clock.restart();
 
 		sf::Event event;
@@ -261,6 +272,11 @@ int main(int argc, char const *argv[])
 					{
 						if (number_of_items_in_row*(item_list_page+1) < Item::get_open_items_num())
 							item_list_page++;
+					}
+					else if (event.key.code == sf::Keyboard::F5)
+					{
+						save_game(items_list, items_on_map);
+						autosave_timer = 0;
 					}
 				}
 

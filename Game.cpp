@@ -16,8 +16,8 @@ void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*>
 	reactions_list_copy.clear();
 
 	// Copying elements to main list of elements
-	for (int i = 0; i < element_list.size(); ++i)
-		items_list_copy.push_back(new Item(element_list[i]));
+	for (int i = 0; i < items_list.size(); ++i)
+		items_list_copy.push_back(new Item(items_list[i]));
 
 	// Copying reactions to main list reactions
 	for (int i = 0; i < reactions_list.size(); ++i)
@@ -67,8 +67,8 @@ void Game::file_show_full_information() const
 	<< divider << std::endl;
 
 	output_file << "Items: " << std::endl;
-	for (int i = 0; i < element_list.size(); ++i)
-		output_file << i+1 << ") " << element_list[i].get_name().toAnsiString() << std::endl;
+	for (int i = 0; i < items_list.size(); ++i)
+		output_file << i+1 << ") " << items_list[i].get_name().toAnsiString() << std::endl;
 
 	output_file << divider << std::endl;
 
@@ -82,11 +82,11 @@ void Game::file_show_full_information() const
 		/* Output of input reagents */
 		for (int j = 0; j < input_items.size(); ++j)
 		{
-			for (int n = 0; n < element_list.size(); ++n)
+			for (int n = 0; n < items_list.size(); ++n)
 			{
-				if (input_items[j] == element_list[n].get_id())
+				if (input_items[j] == items_list[n].get_id())
 				{
-					output_file << element_list[n].get_name().toAnsiString();
+					output_file << items_list[n].get_name().toAnsiString();
 					if (j != input_items.size()-1)
 						output_file << " + ";
 				}
@@ -97,11 +97,11 @@ void Game::file_show_full_information() const
 		/* Output of output reagents. Strange phrase */
 		for (int j = 0; j < output_items.size(); ++j)
 		{
-			for (int n = 0; n < element_list.size(); ++n)
+			for (int n = 0; n < items_list.size(); ++n)
 			{
-				if (output_items[j] == element_list[n].get_id())
+				if (output_items[j] == items_list[n].get_id())
 				{
-					output_file << element_list[n].get_name().toAnsiString();
+					output_file << items_list[n].get_name().toAnsiString();
 					if (j != output_items.size()-1)
 						output_file << " + ";
 				}
@@ -113,7 +113,7 @@ void Game::file_show_full_information() const
 	output_file.close();
 }
 
-void Game::open_all_items(std::vector<Item*> &items)
+void Game::open_all_items(std::vector<Item*> &items) const
 {
 	for (int i = 0; i < items.size(); ++i)
 		Item::set_opened(*items[i]);
