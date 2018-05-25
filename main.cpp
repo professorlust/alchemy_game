@@ -13,13 +13,13 @@
 #include "standart_games/standart_games.hpp"
 #include "save_and_load.hpp"
 #include "console_commands.hpp"
+#include "load_game_data_from_file.hpp"
 
 int main(int argc, char const *argv[])
 {
-	Config config;
 	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
+	
 	bool debug_commands_is_active = false;
-
 	for (int i = 0; i < argc; ++i)
 	{
 		std::string arg = argv[i];
@@ -30,8 +30,8 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	bool autosaving_is_active = config.autosave();
-	float autosave_timer_max = config.get_autosave_timer();
+	bool autosaving_is_active = CONFIG.autosave();
+	float autosave_timer_max = CONFIG.autosave_timer();
 	float autosave_timer = 0;
 
 	std::vector<Item*> items_list; // All lists is loaded from the Game*
@@ -42,9 +42,11 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
+	// load_game_data_from_file(items_list, reactions_list, items_to_spawn, "test"); // testing. not used in the release build
+
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	bool save_game_loaded = load_game(items_list, items_on_map, "game_save");
+	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
 
@@ -129,7 +131,7 @@ int main(int argc, char const *argv[])
 			save_game(items_list, items_on_map);
 			autosave_timer = 0;
 		}
-		
+
 		clock.restart();
 
 		sf::Event event;

@@ -16,7 +16,7 @@ private:
 	void create_new_config_ini();
 
 	bool autosave_ = false;
-	float autosave_timer = 0; // Value in seconds
+	float autosave_timer_ = 0; // Value in seconds
 
 public:
 	Config();
@@ -24,7 +24,9 @@ public:
 
 	/* Methods for obtaining data. All methods are CONST */
 	bool autosave() const;
-	float get_autosave_timer() const;
+	float autosave_timer() const;
 };
+
+const Config CONFIG;
 
 #endif

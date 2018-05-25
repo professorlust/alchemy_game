@@ -30,20 +30,20 @@ void Config::create_new_config_ini()
 		<< "font = lucon.ttf" << std::endl
 		<< std::endl
 		<< "autosave = true" << std::endl
-		<< "autosave_timer = 60 // Value in seconds. Can not be less than 60" << std::endl;
+		<< "autosave_timer = 180 // Value in seconds. Can not be less than 60" << std::endl;
 }
 
 void Config::load_from_file()
 {
-	std::string buffer;
-
 	bool font_loaded = false,
 	width_loaded = false,
 	height_loaded = false;
 
+	std::string buffer;
 	while (std::getline(file, buffer))
 	{
-		if (buffer.size() == 0) // Skipping empty lines
+		if (buffer.size() == 0 || // Skipping empty lines
+			buffer[0] == '#')
 			continue;
 
 		std::string argument, operator_, value;
@@ -106,9 +106,9 @@ void Config::load_from_file()
 
 		else if (argument == "autosave_timer")
 		{
-			autosave_timer = atoi(value.c_str());
-			if (autosave_timer <= 60)
-				autosave_timer = 60;
+			autosave_timer_ = atoi(value.c_str());
+			if (autosave_timer_ < 60)
+				autosave_timer_ = 60;
 		}
 	}
 }
@@ -118,7 +118,7 @@ bool Config::autosave() const
 	return autosave_;
 }
 
-float Config::get_autosave_timer() const
+float Config::autosave_timer() const
 {
-	return autosave_timer;
+	return autosave_timer_;
 }
