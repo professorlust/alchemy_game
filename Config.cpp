@@ -49,8 +49,8 @@ void Config::load_from_file()
 		std::string argument, operator_, value;
 
 		for (int i = 0, step = 0; i < buffer.size(); ++i)
-		{	
-			if (buffer[i] == '#') // Beginning of comments block 
+		{
+			if (buffer[i] == '#') // Beginning of comments block
 				break;
 
 			if (step == 0)

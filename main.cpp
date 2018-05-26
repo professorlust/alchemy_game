@@ -18,7 +18,7 @@
 int main(int argc, char const *argv[])
 {
 	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
-	
+
 	bool debug_commands_is_active = false;
 	for (int i = 0; i < argc; ++i)
 	{
@@ -394,7 +394,7 @@ int main(int argc, char const *argv[])
 
 			window.draw(items_list_background);
 		} // end of unnamed namespace
-		
+
 		/* Top panel render */
 		{
 			unsigned int first_item = item_list_page*number_of_items_in_row,
