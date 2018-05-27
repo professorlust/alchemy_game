@@ -18,14 +18,18 @@ protected:
 	unsigned int number_of_items;
 	unsigned int number_of_reactions;
 
-	sf::String name; // Name of the game
+	sf::String name = "not initialized"; // Name of the game
 	sf::String author; // Author's name
 	sf::String description; // Information about the game
+
+	/* Game settings */
+	bool top_element_panel = true;
 
 	virtual void initialization_textures() = 0;
 	virtual void initialization_items() = 0;
 	virtual void initialization_reactions() = 0;
 	virtual void initialization_started_items() = 0;
+	virtual void initialization_settings() = 0;
 
 public:
 	Game();

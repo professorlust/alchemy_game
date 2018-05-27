@@ -18,6 +18,8 @@ private:
 	bool autosave_ = false;
 	float autosave_timer_ = 0; // Value in seconds
 
+	std::string modifications_folder_;
+
 public:
 	Config();
 	~Config();
@@ -25,6 +27,7 @@ public:
 	/* Methods for obtaining data. All methods are CONST */
 	bool autosave() const;
 	float autosave_timer() const;
+	std::string modifications_folder() const;
 };
 
 const Config CONFIG;

@@ -30,7 +30,9 @@ void Config::create_new_config_ini()
 		<< "font = lucon.ttf" << std::endl
 		<< std::endl
 		<< "autosave = true" << std::endl
-		<< "autosave_timer = 180 // Value in seconds. Can not be less than 60" << std::endl;
+		<< "autosave_timer = 180 // Value in seconds. Can not be less than 60" << std::endl
+		<< std::endl
+		<< "modifications_folder = modifications";
 }
 
 void Config::load_from_file()
@@ -103,13 +105,16 @@ void Config::load_from_file()
 			else // Numeric value entered
 				autosave_ = atoi(value.c_str());
 		}
-
 		else if (argument == "autosave_timer")
 		{
 			autosave_timer_ = atoi(value.c_str());
 			if (autosave_timer_ < 60)
 				autosave_timer_ = 60;
 		}
+
+		/* Other */
+		else if (argument == "modifications_folder")
+			modifications_folder_ = value;
 	}
 }
 
@@ -121,4 +126,9 @@ bool Config::autosave() const
 float Config::autosave_timer() const
 {
 	return autosave_timer_;
+}
+
+std::string Config::modifications_folder() const
+{
+	return modifications_folder_;
 }

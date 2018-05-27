@@ -49,3 +49,8 @@ void Test_game::initialization_started_items()
 		started_items.push_back(items_list[i].get_id());
 	}
 }
+
+void Test_game::initialization_settings()
+{
+
+}

@@ -11,9 +11,9 @@
 #include "Reaction.hpp"
 #include "Config.hpp"
 #include "standart_games/standart_games.hpp"
+#include "Modifications_loader.hpp"
 #include "save_and_load.hpp"
 #include "console_commands.hpp"
-#include "load_game_data_from_file.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -42,13 +42,15 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
-	// load_game_data_from_file(items_list, reactions_list, items_to_spawn, "test"); // testing. not used in the release build
-
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
 	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
+
+	// Game *game = new Modifications_loader("test");
+	// game->load_game(items_list, reactions_list, items_to_spawn);
+	// game->open_all_items(items_list);
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash

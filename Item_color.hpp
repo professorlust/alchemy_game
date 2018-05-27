@@ -5,7 +5,7 @@
 
 struct Item_color
 {
-	sf::String name = "Not selected";
+	sf::String name = "not initialized";
 	sf::Color background = sf::Color(199, 199, 199, 150);
 	sf::Color text = sf::Color(0, 0, 0);
 };

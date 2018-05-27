@@ -226,3 +226,8 @@ void Charodey::initialization_started_items()
 	started_items.push_back(3);
 	started_items.push_back(4);
 }
+
+void Charodey::initialization_settings()
+{
+
+}
