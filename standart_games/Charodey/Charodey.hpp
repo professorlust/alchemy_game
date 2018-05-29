@@ -8,8 +8,8 @@ private:
 	void initialization_reactions();
 	void initialization_started_items();
 	void initialization_settings();
-	
+
 public:
 	Charodey();
-	~Charodey();	
+	~Charodey();
 };

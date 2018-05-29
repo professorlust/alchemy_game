@@ -7,7 +7,7 @@ Item::Item(sf::Texture* texture, sf::String name, sf::String description, unsign
 	has_image_ = true;
 
 	rect.left = rect.top = 0;
-	rect.height = rect.width = ITEM_DIMENSIONS;
+	rect.height = rect.width = CONFIG.item_side();
 
 	item_color = item_color_;
 
@@ -41,7 +41,7 @@ Item::Item(sf::String name, sf::String description, unsigned int ID, const Item_
 
 	text_name.setCharacterSize(16);
 	text_name.setFillColor(item_color.text);
-	text_name.setFont(GLOBAL_FONT);
+	text_name.setFont(Config::font);
 	text_name.setString(name);
 }
 
@@ -73,7 +73,7 @@ Item::Item(const Item &copy, sf::Vector2f coordinates)
 
 		text_name.setCharacterSize(16);
 		text_name.setFillColor(item_color.text);
-		text_name.setFont(GLOBAL_FONT);
+		text_name.setFont(Config::font);
 		text_name.setString(name);
 	}
 }
@@ -96,15 +96,15 @@ void Item::render(sf::RenderWindow &window)
 
 void Item::check_out_the_field(float *x, float *y)
 {
-	int y_top_border = BORDERS.top,
-	y_bottom_border = BORDERS.top + BORDERS.height,
-	x_left_border = BORDERS.left,
-	x_right_border = BORDERS.left + BORDERS.width;
+	int y_top_border = Config::borders.top,
+	y_bottom_border = Config::borders.top + Config::borders.height,
+	x_left_border = Config::borders.left,
+	x_right_border = Config::borders.left + Config::borders.width;
 
 	if (*y < y_top_border) *y = y_top_border;
-	if (*y > y_bottom_border - ITEM_DIMENSIONS) *y = y_bottom_border - rect.height;
+	if (*y > y_bottom_border - CONFIG.item_side()) *y = y_bottom_border - rect.height;
 	if (*x < x_left_border) *x = x_left_border;
-	if (*x > x_right_border - ITEM_DIMENSIONS) *x = x_right_border - rect.width;
+	if (*x > x_right_border - CONFIG.item_side()) *x = x_right_border - rect.width;
 }
 
 void Item::set_position(sf::Vector2f coordinates)

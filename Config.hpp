@@ -5,20 +5,24 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
-#include "defines.hpp"
+#include <SFML/Graphics.hpp>
 
 class Config
 {
 private:
 	std::ifstream file;
 
-	void load_from_file();
-	void create_new_config_ini();
-
 	bool autosave_ = false;
 	float autosave_timer_ = 0; // Value in seconds
 
-	std::string modifications_folder_;
+	std::string modifications_folder_ = "modifications";
+	std::string font_name_ = "lucon.ttf";
+
+	void load_from_file();
+	void create_new_config_ini();
+
+	sf::Vector2u w_sizes = sf::Vector2u(800, 600);
+	unsigned int i_side = 64;
 
 public:
 	Config();
@@ -28,6 +32,13 @@ public:
 	bool autosave() const;
 	float autosave_timer() const;
 	std::string modifications_folder() const;
+	sf::Vector2u window_sizes() const;
+	unsigned int item_side() const;
+	std::string font_name() const;
+
+	/* Static */
+	static sf::FloatRect borders;
+	static sf::Font font;
 };
 
 const Config CONFIG;

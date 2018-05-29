@@ -1,7 +1,7 @@
 #ifndef ITEM_HPP
 #define ITEM_HPP
 
-#include "defines.hpp"
+#include "Config.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Item_color.hpp"

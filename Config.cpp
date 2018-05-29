@@ -2,7 +2,6 @@
 
 Config::Config()
 {
-	// WINDOW_H and WINDOW_W in defines.cpp
 	file.open("config.ini");
 
 	if (!file.is_open())
@@ -37,10 +36,6 @@ void Config::create_new_config_ini()
 
 void Config::load_from_file()
 {
-	bool font_loaded = false,
-	width_loaded = false,
-	height_loaded = false;
-
 	std::string buffer;
 	while (std::getline(file, buffer))
 	{
@@ -76,25 +71,17 @@ void Config::load_from_file()
 		}
 
 		/* Global variables reinitialization */
-		if (argument == "font" && !font_loaded)
-		{
-			if (!GLOBAL_FONT.loadFromFile(value)) // Protection against missing font
-				GLOBAL_FONT.loadFromFile("lucon.ttf");
-			font_loaded = true;
-		}
-		else if (argument == "width" && !width_loaded)
+		if (argument == "font")
+			font_name_ = value;
+		else if (argument == "width")
 		{
 			int window_w = atoi(value.c_str());
-			WINDOW_W = std::max(64, window_w);
-
-			width_loaded = true;
+			w_sizes.x = std::max(64, window_w);
 		}
-		else if (argument == "height" && !height_loaded)
+		else if (argument == "height")
 		{
-			int window_h = atoi(value.c_str());
-			WINDOW_H = std::max(ITEM_DIMENSIONS*3, window_h);
-
-			height_loaded = true;
+			unsigned int window_h = atoi(value.c_str());
+			w_sizes.y = std::max(i_side*3, window_h);
 		}
 
 		/* Autosave settings */
@@ -132,3 +119,22 @@ std::string Config::modifications_folder() const
 {
 	return modifications_folder_;
 }
+
+sf::Vector2u Config::window_sizes() const
+{
+	return w_sizes;
+}
+
+unsigned int Config::item_side() const
+{
+	return i_side;
+}
+
+std::string Config::font_name() const
+{
+	return font_name_;
+}
+
+/* Statics */
+sf::FloatRect Config::borders = sf::FloatRect(0, CONFIG.item_side()*2, CONFIG.window_sizes().x, CONFIG.window_sizes().y - CONFIG.item_side()*2);
+sf::Font Config::font = sf::Font();

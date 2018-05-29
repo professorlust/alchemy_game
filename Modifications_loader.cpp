@@ -81,15 +81,19 @@ void Modifications_loader::initialization_items()
 	}
 	symbol += 2; // skip the """ and blank space
 
+	bool in_quotes = false;
 	/* Getting parameters */
 	while (symbol < process.size() &&
 		   process[symbol] != comment_flag)
 	{
-		if (process[symbol] != ' ')
+		if (process[symbol] == '(' || process[symbol] == ')')
+			in_quotes = !in_quotes;
+
+		if (process[symbol] != ' ' || in_quotes)
 			parameter += process[symbol];
 		symbol++;
 
-		if (process[symbol] == ' ' ||
+		if ((process[symbol] == ' ' && !in_quotes) ||
 			symbol == process.size()) // Blank space is delimiter of parameters
 		{
 			std::string parameter_string, parameter_value;
@@ -120,6 +124,7 @@ void Modifications_loader::initialization_items()
 				textures.push_back(new sf::Texture());
 				textures[textures.size()-1]->loadFromFile(CONFIG.modifications_folder()+'/'+modification_image_folder_name+'/'+parameter_value);
 			}
+
 			else if (parameter_string == "color")
 			{
 				if (parameter_value == "Air")
@@ -161,14 +166,91 @@ void Modifications_loader::initialization_items()
 	}
 
 	if (has_image)
-		items_list.emplace_back(textures[textures.size()-1], name, "", items_list.size(), item_color, is_static);
+		items_list.emplace_back(textures[textures.size()-1], name, "", items_list.size()+1, item_color, is_static);
 	else
-		items_list.emplace_back(name, "", items_list.size(), item_color, is_static);
+		items_list.emplace_back(name, "", items_list.size()+1, item_color, is_static);
 }
 
 void Modifications_loader::initialization_reactions()
 {
+	if (process.size() == 0)
+		return;
 
+	unsigned int symbol = 1; // skip first """
+	std::string item_name;
+
+	std::vector<unsigned int> input_reagents;
+	std::vector<unsigned int> output_reagents;
+
+	std::string buffer_name;
+
+	bool in_quotes = true;
+
+	removing_spaces();
+
+	/* Getting input reagents */
+	while (symbol < process.size() &&
+		   process[symbol] != comment_flag &&
+		   process[symbol] != '=')
+	{
+		if (in_quotes &&
+			process[symbol] != '"')
+			buffer_name += process[symbol];
+
+		if (process[symbol] == '"')
+		{
+			in_quotes = !in_quotes;
+
+			bool item_found = false;
+			for (int i = 0; i < items_list.size(); ++i)
+			{
+				if (items_list[i].get_name() == buffer_name)
+				{
+					input_reagents.push_back(items_list[i].get_id());
+					item_found = true;
+					break;
+				}
+			}
+			if (!item_found &&
+				buffer_name.size() != 0)
+				std::cout << buffer_name << ": element not found." << std::endl;
+			buffer_name.clear();
+		}
+		symbol++;
+	}
+	symbol++; // skip the '='
+
+	/* Getting output reagents */
+	while (symbol < process.size() &&
+		   process[symbol] != comment_flag)
+	{
+		if (in_quotes &&
+			process[symbol] != '"')
+			buffer_name += process[symbol];
+
+		if (process[symbol] == '"')
+		{
+			in_quotes = !in_quotes;
+
+			bool item_found = false;
+			for (int i = 0; i < items_list.size(); ++i)
+			{
+				if (items_list[i].get_name() == buffer_name)
+				{
+					output_reagents.push_back(items_list[i].get_id());
+					item_found = true;
+					break;
+				}
+			}
+			if (!item_found &&
+				buffer_name.size() != 0)
+				std::cout << buffer_name << ": element not found." << std::endl;
+			buffer_name.clear();
+		}
+		symbol++;
+	}
+
+	reactions_list.push_back(Reaction(input_reagents, output_reagents));
 }
 
 void Modifications_loader::initialization_started_items()
@@ -181,6 +263,9 @@ void Modifications_loader::initialization_started_items()
 
 void Modifications_loader::initialization_settings()
 {
+	if (process.size() == 0)
+		return;
+
 	unsigned int symbol = 0;
 	std::string parameter, value;
 
@@ -222,6 +307,9 @@ void Modifications_loader::initialization_settings()
 
 void Modifications_loader::initialization_colors()
 {
+	if (process.size() == 0)
+		return;
+
 	unsigned int symbol = 1; // skip the """
 	std::string parameter;
 
@@ -292,15 +380,13 @@ void Modifications_loader::initialization_colors()
 	}
 
 	item_colors.push_back(new_item_color);
-
-	/* Temp debug */
-	// std::cout << "Name: " << new_item_color.name.toAnsiString() << std::endl
-	// << "background: " << int(new_item_color.background.r) << " " << int(new_item_color.background.g) << " " << int(new_item_color.background.b) << std::endl
-	// << "text: " << int(new_item_color.text.r) << " " << int(new_item_color.text.g) << " " << int(new_item_color.text.b) << std::endl << std::endl;
 }
 
 void Modifications_loader::removing_spaces()
 {
+	if (process.size() == 0)
+		return;
+
 	bool in_quotes = false;
 	unsigned int i = 0;
 

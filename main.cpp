@@ -1,5 +1,3 @@
-#include "defines.hpp"
-
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
@@ -17,7 +15,7 @@
 
 int main(int argc, char const *argv[])
 {
-	BORDERS = sf::FloatRect(0, ITEM_DIMENSIONS*2, WINDOW_W, WINDOW_H - ITEM_DIMENSIONS*2);
+	Config::font.loadFromFile(CONFIG.font_name());
 
 	bool debug_commands_is_active = false;
 	for (int i = 0; i < argc; ++i)
@@ -42,15 +40,16 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
-	Game *game = new Charodey();
-	game->load_game(items_list, reactions_list, items_to_spawn);
-	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
-	if (save_game_loaded)
-		items_to_spawn.clear();
-
-	// Game *game = new Modifications_loader("test");
+	// Game *game = new Charodey();
 	// game->load_game(items_list, reactions_list, items_to_spawn);
-	// game->open_all_items(items_list);
+	// bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
+	// if (save_game_loaded)
+	// 	items_to_spawn.clear();
+
+	Game *game = new Modifications_loader("test");
+	game->load_game(items_list, reactions_list, items_to_spawn);
+	game->open_all_items(items_list);
+	game->file_show_full_information();
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -68,7 +67,7 @@ int main(int argc, char const *argv[])
 	sf::Text item_name_text;  // Item name when hovering over it
 	item_name_text.setCharacterSize(16);
 	item_name_text.setFillColor(sf::Color(0, 0, 0));
-	item_name_text.setFont(GLOBAL_FONT);
+	item_name_text.setFont(Config::font);
 
 	sf::RectangleShape item_name_background; // Background of the name of the item when you hover over it
 	item_name_background.setFillColor(sf::Color(200, 200, 200));
@@ -76,26 +75,26 @@ int main(int argc, char const *argv[])
 	sf::Text number_of_open_items;
 	number_of_open_items.setCharacterSize(14);
 	number_of_open_items.setFillColor(sf::Color(0, 0, 0));
-	number_of_open_items.setFont(GLOBAL_FONT);
-	number_of_open_items.setPosition(5, ITEM_DIMENSIONS*2+5);
+	number_of_open_items.setFont(Config::font);
+	number_of_open_items.setPosition(5, CONFIG.item_side()*2+5);
 	// The string will be set after the startup elements appear
 
 	int item_list_page = 0;
-	int number_of_items_in_row = WINDOW_W / ITEM_DIMENSIONS;
+	int number_of_items_in_row = CONFIG.window_sizes().x / CONFIG.item_side();
 
 	sf::RectangleShape items_list_background; // The rectangle for the array of open elements
 	items_list_background.setPosition(0, 0);
 	items_list_background.setFillColor(sf::Color(199, 199, 199, 150)); // Light grey
-	items_list_background.setSize(sf::Vector2f(WINDOW_W, ITEM_DIMENSIONS*2));
+	items_list_background.setSize(sf::Vector2f(CONFIG.window_sizes().x, CONFIG.item_side()*2));
 
 	/* Spawn of starting elements */
 	// A slightly modified code for the appearance of new elements.
 	if (items_to_spawn.size() > 0)
 	{
-		float R = ITEM_DIMENSIONS, angle = 0;
+		float R = CONFIG.item_side(), angle = 0;
 		int number = items_to_spawn.size();
-		float spawn_x_center = WINDOW_W / 2, // Center of a circle of spawn of elements
-			  spawn_y_center = (WINDOW_H - BORDERS.top) / 2;
+		float spawn_x_center = CONFIG.window_sizes().x / 2, // Center of a circle of spawn of elements
+			  spawn_y_center = (CONFIG.window_sizes().y - Config::borders.top) / 2;
 		for (int i = 0; i < items_to_spawn.size(); ++i)
 		{
 			for (int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
@@ -118,7 +117,7 @@ int main(int argc, char const *argv[])
 
 	number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
 
-	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H, 32), "AlchemyGame", sf::Style::Close);
+	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "AlchemyGame", sf::Style::Close);
 	window.setFramerateLimit(30);
 
 	while (window.isOpen())
@@ -152,7 +151,7 @@ int main(int argc, char const *argv[])
 				{
 					if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 					{
-						if (cursor_position.y < BORDERS.top) // Hit an array of elements
+						if (cursor_position.y < Config::borders.top) // Hit an array of elements
 						{
 							for (int i = item_list_page*number_of_items_in_row;
 							i < items_list.size();
@@ -163,7 +162,7 @@ int main(int argc, char const *argv[])
 									!items_list[i]->is_static())
 								{
 									float spawn_x = cursor_position.x;
-									float spawn_y = BORDERS.top; // BORDERS.top - items_list[i]->get_rect().top;
+									float spawn_y = Config::borders.top; // Config::borders.top - items_list[i]->get_rect().top;
 									items_on_map.push_back(new Item(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
 									items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									selected_item = items_on_map.size()-1;
@@ -171,7 +170,7 @@ int main(int argc, char const *argv[])
 								}
 							}
 						}
-						else // for (cursor_position.y < BORDERS.top). Hit an game zone
+						else // for (cursor_position.y < Config::borders.top). Hit an game zone
 						{
 							selection_area_is_active = true;
 							for (int i = 0; i < items_on_map.size(); ++i)
@@ -296,7 +295,7 @@ int main(int argc, char const *argv[])
 			// protection against access to the area of opened elements
 			float temp_w = cursor_position.x - selection_area_rect.getPosition().x;
 			float temp_h = 0;
-			temp_h = (cursor_position.y > BORDERS.top) ? cursor_position.y - selection_area_rect.getPosition().y : BORDERS.top - selection_area_rect.getPosition().y;
+			temp_h = (cursor_position.y > Config::borders.top) ? cursor_position.y - selection_area_rect.getPosition().y : Config::borders.top - selection_area_rect.getPosition().y;
 
 			selection_area_rect.setSize(sf::Vector2f(temp_w, temp_h));
 		}
@@ -330,7 +329,7 @@ int main(int argc, char const *argv[])
 		// The spawn of new elements
 		if (items_to_spawn.size() > 0)
 		{
-			float R = ITEM_DIMENSIONS/1.75, angle = 0;
+			float R = CONFIG.item_side()/1.75, angle = 0;
 			int number = items_to_spawn.size();
 
 			for (int i = 0; i < items_to_spawn.size(); ++i)
@@ -410,8 +409,8 @@ int main(int argc, char const *argv[])
 				if (items_list[i]->is_opened() &&
 					!items_list[i]->is_static())
 				{
-					x = (render_number < number_of_items_in_row) ? render_number*ITEM_DIMENSIONS : (render_number-number_of_items_in_row)*ITEM_DIMENSIONS;
-					y = (render_number < number_of_items_in_row) ? 0 : ITEM_DIMENSIONS;
+					x = (render_number < number_of_items_in_row) ? render_number*CONFIG.item_side() : (render_number-number_of_items_in_row)*CONFIG.item_side();
+					y = (render_number < number_of_items_in_row) ? 0 : CONFIG.item_side();
 					items_list[i]->set_position_hard(sf::Vector2f(x, y));
 					items_list[i]->render(window);
 
