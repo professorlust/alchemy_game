@@ -40,16 +40,17 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
-	// Game *game = new Charodey();
-	// game->load_game(items_list, reactions_list, items_to_spawn);
-	// bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
-	// if (save_game_loaded)
-	// 	items_to_spawn.clear();
-
-	Game *game = new Modifications_loader("test");
+	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	game->open_all_items(items_list);
-	game->file_show_full_information();
+	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
+	if (save_game_loaded)
+		items_to_spawn.clear();
+
+	// Game *game = new Modifications_loader("test");
+	// game->load_game(items_list, reactions_list, items_to_spawn);
+	// game->open_all_items(items_list);
+	// game->file_show_full_information();
+	// Modifications_loader::create_modification_template();
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash

@@ -32,5 +32,6 @@ public:
 	Modifications_loader(std::string file);
 	~Modifications_loader();
 
+	static void create_modification_template();
 };
 #endif

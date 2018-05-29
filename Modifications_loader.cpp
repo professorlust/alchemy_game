@@ -255,10 +255,20 @@ void Modifications_loader::initialization_reactions()
 
 void Modifications_loader::initialization_started_items()
 {
-	unsigned int symbol = 0;
-	std::string parameter, value;
+	if (process.size() == 0)
+		return;
 
+	std::string item_name = process;
 
+	for (int i = 0; i < items_list.size(); ++i)
+		if (item_name == items_list[i].get_name())
+		{
+			started_items.push_back(items_list[i].get_id());
+			return;
+		}
+
+	// if name not found
+	std::cout << process << ": started item not found." << std::endl;
 }
 
 void Modifications_loader::initialization_settings()
@@ -401,4 +411,31 @@ void Modifications_loader::removing_spaces()
 		else
 			i++;
 	}
+}
+
+void Modifications_loader::create_modification_template()
+{
+	std::ofstream file("modification_template.txt");
+
+	file
+		<< "settings:" << std::endl
+		<< "modification_name = \"test game\"" << std::endl
+		<< "modification_author = \"author name\"" << std::endl
+		<< "modification_description = \"Description. It's a long story\"" << std::endl
+		<< "modification_image_folder_name = \"folder name\" # Full path to the image folder: modifications_folder (from config.ini) + modification_image_folder_name"  << std::endl
+		<< std::endl
+		<< "top_element_panel = true" << std::endl
+		<< std::endl
+		<< "colors:" << std::endl
+		<< "# Put your colors here" << std::endl
+		<< std::endl
+		<< "elements:" << std::endl
+		<< "# Put your elements here" << std::endl
+		<< std::endl
+		<< "reactions:" << std::endl
+		<< "# Put your reactions here" << std::endl
+		<< std::endl
+		<< "started_elements:" << std::endl
+		<< "# Put your started elements here" << std::endl
+		<< std::endl;
 }
