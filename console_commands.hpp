@@ -5,8 +5,9 @@
 #include <string>
 
 #include "Item.hpp"
+#include "Reaction.hpp"
 #include "Game.hpp"
 
-void console_command(std::vector<Item*> &items_list, Game *game);
+void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &reactions_list, Game *game);
 
 #endif

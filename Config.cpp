@@ -26,12 +26,13 @@ void Config::create_new_config_ini()
 	config_file
 		<< "width = 800" << std::endl
 		<< "height = 600" << std::endl
-		<< "font = lucon.ttf" << std::endl
+		<< "FPS_limit = 60" << std::endl
 		<< std::endl
 		<< "autosave = true" << std::endl
-		<< "autosave_timer = 180 // Value in seconds. Can not be less than 60" << std::endl
+		<< "autosave_timer = 180 # Value in seconds. Can not be less than 60" << std::endl
 		<< std::endl
-		<< "modifications_folder = modifications";
+		<< "modifications_folder = modifications" << std::endl
+		<< "font = lucon.ttf" << std::endl;
 }
 
 void Config::load_from_file()
@@ -102,6 +103,8 @@ void Config::load_from_file()
 		/* Other */
 		else if (argument == "modifications_folder")
 			modifications_folder_ = value;
+		else if (argument == "FPS_limit")
+			max_FPS = atoi(value.c_str());
 	}
 }
 
@@ -133,6 +136,11 @@ unsigned int Config::item_side() const
 std::string Config::font_name() const
 {
 	return font_name_;
+}
+
+unsigned int Config::fps_limit() const
+{
+	return max_FPS;
 }
 
 /* Statics */

@@ -23,7 +23,8 @@ protected:
 	sf::String description; // Information about the game
 
 	/* Game settings */
-	bool top_element_panel = true;
+	bool top_element_panel_ = true;
+	bool deletion_elements_RMB_ = true;
 
 	virtual void initialization_textures() = 0;
 	virtual void initialization_items() = 0;
@@ -43,6 +44,9 @@ public:
 	void console_show_information() const;
 	void file_show_full_information() const;
 	sf::String get_game_name() const;
+
+	// settings
+	bool deletion_elements_RMB();
 
 	/* Game management methods */
 	void open_all_items(std::vector<Item*> &items) const;

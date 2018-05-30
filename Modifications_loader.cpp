@@ -117,6 +117,7 @@ void Modifications_loader::initialization_items()
 
 			if (parameter_string == "static")
 				is_static = true;
+
 			else if (parameter_string == "image" &&
 					 !has_image)
 			{
@@ -302,7 +303,11 @@ void Modifications_loader::initialization_settings()
 	}
 
 	if (parameter == "top_element_panel") // standart value: TRUE
-		top_element_panel = (value == "false" || value == "0") ? false : true;
+		top_element_panel_ = (value == "false" || value == "0") ? false : true;
+	else if (parameter == "deletion_elements_RMB")
+		deletion_elements_RMB_ = (value == "false" || value == "0") ? false : true;
+
+	/* Modification information */
 	else if (parameter == "modification_name")
 		name = value;
 	else if (parameter == "modification_author")
@@ -425,6 +430,7 @@ void Modifications_loader::create_modification_template()
 		<< "modification_image_folder_name = \"folder name\" # Full path to the image folder: modifications_folder (from config.ini) + modification_image_folder_name"  << std::endl
 		<< std::endl
 		<< "top_element_panel = true" << std::endl
+		<< "deletion_elements_RMB = true # Deletion elements by pressing the RMB"
 		<< std::endl
 		<< "colors:" << std::endl
 		<< "# Put your colors here" << std::endl

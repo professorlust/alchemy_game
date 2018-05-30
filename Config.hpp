@@ -24,6 +24,8 @@ private:
 	sf::Vector2u w_sizes = sf::Vector2u(800, 600);
 	unsigned int i_side = 64;
 
+	unsigned int max_FPS = 60;
+
 public:
 	Config();
 	~Config();
@@ -35,6 +37,7 @@ public:
 	sf::Vector2u window_sizes() const;
 	unsigned int item_side() const;
 	std::string font_name() const;
+	unsigned int fps_limit() const;
 
 	/* Static */
 	static sf::FloatRect borders;

@@ -41,6 +41,11 @@ sf::String Game::get_game_name() const
 	return name;
 }
 
+bool Game::deletion_elements_RMB()
+{
+	return deletion_elements_RMB_;
+}
+
 void Game::console_show_information() const
 {
 	std::cout << name.toAnsiString() << std::endl

@@ -40,17 +40,21 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
+#define debug_load_game 0
+	#if debug_load_game == 0
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
 	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
-
-	// Game *game = new Modifications_loader("test");
-	// game->load_game(items_list, reactions_list, items_to_spawn);
-	// game->open_all_items(items_list);
-	// game->file_show_full_information();
-	// Modifications_loader::create_modification_template();
+	#else
+	Game *game = new Modifications_loader("test");
+	game->load_game(items_list, reactions_list, items_to_spawn);
+	game->open_all_items(items_list);
+	game->file_show_full_information();
+	Modifications_loader::create_modification_template();
+	#endif
+#undef debug_load_game
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -116,10 +120,12 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 
+	sf::Vector2f spawn_items_middle(0, 0);
+
 	number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
 
 	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "AlchemyGame", sf::Style::Close);
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(CONFIG.fps_limit());
 
 	while (window.isOpen())
 	{
@@ -181,15 +187,19 @@ int main(int argc, char const *argv[])
 									if (items_on_map[i]->toggle_move(cursor_position))
 									{
 										selection_area_is_active = false;
-										selected_item = i;
+										selected_item = 0;
+										std::swap(items_on_map[i], items_on_map[0]);
 										break;
 									}
 								}
 							}
-							selection_area_rect.setPosition(cursor_position.x, cursor_position.y);
+
+							if (selection_area_is_active)
+								selection_area_rect.setPosition(cursor_position.x, cursor_position.y);
 						}
 					}
-					else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+					else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) &&
+							game->deletion_elements_RMB())
 					{
 						for (int i = 0; i < items_on_map.size(); ++i)
 						{
@@ -282,6 +292,9 @@ int main(int argc, char const *argv[])
 						save_game(items_list, items_on_map);
 						autosave_timer = 0;
 					}
+					else if (event.key.code == sf::Keyboard::F4)
+						for (int i = 0; i < items_on_map.size(); ++i)
+							items_to_erase.push_back(i);
 				}
 
 				default:
@@ -330,8 +343,8 @@ int main(int argc, char const *argv[])
 		// The spawn of new elements
 		if (items_to_spawn.size() > 0)
 		{
-			float R = CONFIG.item_side()/1.75, angle = 0;
 			int number = items_to_spawn.size();
+			float R = CONFIG.item_side()/1.75 + number*8, angle = 0;
 
 			for (int i = 0; i < items_to_spawn.size(); ++i)
 			{
@@ -341,8 +354,8 @@ int main(int argc, char const *argv[])
 						!items_list[j]->is_static())
 					{
 						angle += 6.28/number;
-						spawn_x = cursor_position.x + R*cos(angle),
-						spawn_y = cursor_position.y + R*sin(angle);
+						spawn_x = cursor_position.x + R*cos(angle) - CONFIG.item_side()/2,
+						spawn_y = cursor_position.y + R*sin(angle) - CONFIG.item_side()/2;
 
 						Item::set_opened(*items_list[j]);
 						items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
@@ -425,7 +438,7 @@ int main(int argc, char const *argv[])
 		/* Activating development commands */
 		if (debug_commands_is_active &&
 			sf::Keyboard::isKeyPressed(sf::Keyboard::Tilde))
-				console_command(items_list, game);
+				console_command(items_list, reactions_list, game);
 	}
 
 	return 0;
