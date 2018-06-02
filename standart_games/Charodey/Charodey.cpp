@@ -221,10 +221,7 @@ void Charodey::initialization_reactions()
 
 void Charodey::initialization_started_items()
 {
-	started_items.push_back(1);
-	started_items.push_back(2);
-	started_items.push_back(3);
-	started_items.push_back(4);
+	for(int i=1;i<5;i++) started_items.push_back(i);
 }
 
 void Charodey::initialization_settings()
