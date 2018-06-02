@@ -14,6 +14,7 @@ void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &rea
 		std::cout << "List of commands:" << std::endl
 		<< "open_all: Opens all the elements in the game" << std::endl
 		<< "get_full_game_information: Creates a file with information about the running game" << std::endl
+		<< "create_modification_template: Creates a template with a modification code" << std::endl
 		<< "exit: Close console input" << std::endl;
 
 	else if (input_string == "open_all")
@@ -22,6 +23,9 @@ void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &rea
 	else if (input_string == "get_full_game_information")
 		game->file_show_full_information();
 
+	else if (input_string == "create_modification_template")
+		Modifications_loader::create_modification_template();
+	
 	else if (input_string == "exit")
 		is_active = false;
 

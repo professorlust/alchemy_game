@@ -1,9 +1,9 @@
 #ifndef ITEM_HPP
 #define ITEM_HPP
 
-#include "Config.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Config.hpp"
 #include "Item_color.hpp"
 
 class Item

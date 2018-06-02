@@ -1,8 +1,8 @@
 #ifndef MODIFICATIONS_LOADER
 #define MODIFICATIONS_LOADER
 
-#include "Game.hpp"
-#include "Config.hpp"
+#include "../Game.hpp"
+#include "../Config.hpp"
 
 class Modifications_loader : public Game
 {

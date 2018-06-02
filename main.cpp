@@ -9,7 +9,7 @@
 #include "Reaction.hpp"
 #include "Config.hpp"
 #include "standart_games/standart_games.hpp"
-#include "Modifications_loader.hpp"
+#include "Modifications_loader/Modifications_loader.hpp"
 #include "save_and_load.hpp"
 #include "console_commands.hpp"
 
@@ -38,9 +38,8 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> reaction_items_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
-	std::vector<sf::Texture*> textures; // Used when downloading a game from a file
 
-#define debug_load_game 0
+#define debug_load_game 1
 	#if debug_load_game == 0
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
@@ -120,11 +119,9 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 
-	sf::Vector2f spawn_items_middle(0, 0);
-
 	number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
 
-	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "AlchemyGame", sf::Style::Close);
+	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "Alchemy", sf::Style::Close);
 	window.setFramerateLimit(CONFIG.fps_limit());
 
 	while (window.isOpen())
@@ -171,8 +168,11 @@ int main(int argc, char const *argv[])
 									float spawn_x = cursor_position.x;
 									float spawn_y = Config::borders.top; // Config::borders.top - items_list[i]->get_rect().top;
 									items_on_map.push_back(new Item(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
-									items_on_map[items_on_map.size()-1]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
-									selected_item = items_on_map.size()-1;
+
+									selected_item = 0;
+									std::swap(items_on_map[items_on_map.size()-1], items_on_map[0]);
+
+									items_on_map[0]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									break;
 								}
 							}
@@ -215,11 +215,8 @@ int main(int argc, char const *argv[])
 
 				case sf::Event::MouseButtonReleased:
 				{
-					for (int i = 0; i < items_on_map.size(); ++i)
-					{
-						if (items_on_map[i]->toggle_move())
-							break;
-					}
+					if (items_on_map.size() != 0)
+						items_on_map[0]->toggle_move();
 
 					if (selection_area_is_active)
 					{
@@ -295,6 +292,11 @@ int main(int argc, char const *argv[])
 					else if (event.key.code == sf::Keyboard::F4)
 						for (int i = 0; i < items_on_map.size(); ++i)
 							items_to_erase.push_back(i);
+
+					/* Activating development commands */
+					else if (event.key.code == sf::Keyboard::Tilde
+						&& debug_commands_is_active)
+						console_command(items_list, reactions_list, game);
 				}
 
 				default:
@@ -373,7 +375,7 @@ int main(int argc, char const *argv[])
 		window.draw(number_of_open_items);
 
 		/* Items on map render */
-		{
+		{ // unnamed namespace
 			int32_t temp_render_item_name_num = -1; // Render the element name
 			bool temp_contains = false;
 			for (int i = items_on_map.size()-1; i >= 0; --i)
@@ -382,7 +384,7 @@ int main(int argc, char const *argv[])
 				items_on_map[i]->render(window);
 
 				if (items_on_map[i]->rect_contains_cursor(cursor_position) &&
-				   (items_on_map[i]->has_image()) )
+				    items_on_map[i]->has_image())
 				{
 					temp_contains = true;
 					temp_render_item_name_num = i;
@@ -411,7 +413,7 @@ int main(int argc, char const *argv[])
 		} // end of unnamed namespace
 
 		/* Top panel render */
-		{
+		{ // unnamed namespace
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
 			render_number = 0;
@@ -434,11 +436,6 @@ int main(int argc, char const *argv[])
 		} // end of unnamed namespace
 
 		window.display();
-
-		/* Activating development commands */
-		if (debug_commands_is_active &&
-			sf::Keyboard::isKeyPressed(sf::Keyboard::Tilde))
-				console_command(items_list, reactions_list, game);
 	}
 
 	return 0;

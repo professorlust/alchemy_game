@@ -9,7 +9,6 @@ Config::Config()
 		create_new_config_ini();
 		std::cout << "config.ini not found. Creating a new file. Standard values are set in the file." << std::endl;
 	}
-
 	load_from_file();
 	file.close();
 }
@@ -44,31 +43,30 @@ void Config::load_from_file()
 			buffer[0] == '#')
 			continue;
 
-		std::string argument, operator_, value;
+		std::string argument, value;
 
-		for (int i = 0, step = 0; i < buffer.size(); ++i)
+		unsigned int symbol = 0;
+		while (symbol < buffer.size())
 		{
-			if (buffer[i] == '#') // Beginning of comments block
+			if (buffer[symbol] == ' ')
+				buffer.erase(buffer.begin()+symbol);
+			else
+				symbol++;
+		}
+
+		bool trigger = false; // 0 - argument, 1 - value
+		for (auto i = 0; i < buffer.size() && buffer[i] != '#'; ++i)
+		{
+			if (buffer[i] == '=')
+			{
+				trigger = true;
+				continue;
+			}
+
+			if (buffer[i] == '#')
 				break;
 
-			if (step == 0)
-			{
-				if (buffer[i] != ' ')
-					argument += buffer[i];
-				else
-					step++;
-			}
-			else if (step == 1)
-			{
-				if (buffer[i] != ' ')
-					operator_ += buffer[i];
-				else
-					step++;
-			}
-			else // if step == 2
-			{
-				value += buffer[i];
-			}
+			(trigger) ? value += buffer[i] : argument += buffer[i];
 		}
 
 		/* Global variables reinitialization */
@@ -105,6 +103,8 @@ void Config::load_from_file()
 			modifications_folder_ = value;
 		else if (argument == "FPS_limit")
 			max_FPS = atoi(value.c_str());
+
+		buffer.clear();
 	}
 }
 
@@ -144,5 +144,6 @@ unsigned int Config::fps_limit() const
 }
 
 /* Statics */
+const Config CONFIG;
 sf::FloatRect Config::borders = sf::FloatRect(0, CONFIG.item_side()*2, CONFIG.window_sizes().x, CONFIG.window_sizes().y - CONFIG.item_side()*2);
 sf::Font Config::font = sf::Font();

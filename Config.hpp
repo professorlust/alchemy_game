@@ -44,6 +44,6 @@ public:
 	static sf::Font font;
 };
 
-const Config CONFIG;
+extern const Config CONFIG;
 
 #endif
