@@ -203,7 +203,8 @@ int main(int argc, char const *argv[])
 					{
 						for (int i = 0; i < items_on_map.size(); ++i)
 						{
-							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
+							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
+							   !items_on_map[i]->is_static()))
 							{
 								items_to_erase.push_back(i);
 								break;
