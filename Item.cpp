@@ -83,43 +83,7 @@ Item::~Item()
 
 }
 
-void Item::render(sf::RenderWindow &window)
-{
-	if (has_image_)
-		window.draw(sprite);
-	else
-	{
-		window.draw(background);
-		window.draw(text_name);
-	}
-}
-
-void Item::check_out_the_field(float *x, float *y)
-{
-	int y_top_border = Config::borders.top,
-	y_bottom_border = Config::borders.top + Config::borders.height,
-	x_left_border = Config::borders.left,
-	x_right_border = Config::borders.left + Config::borders.width;
-
-	if (*y < y_top_border) *y = y_top_border;
-	if (*y > y_bottom_border - CONFIG.item_side()) *y = y_bottom_border - rect.height;
-	if (*x < x_left_border) *x = x_left_border;
-	if (*x > x_right_border - CONFIG.item_side()) *x = x_right_border - rect.width;
-}
-
-void Item::set_position(sf::Vector2f coordinates)
-{
-	check_out_the_field(&coordinates.x, &coordinates.y);
-	rect.left = coordinates.x;
-	rect.top = coordinates.y;
-	if (has_image_)
-		sprite.setPosition(rect.left, rect.top);
-	else
-	{
-		background.setPosition(rect.left, rect.top);
-		text_name.setPosition(rect.left, rect.top);
-	}
-}
+/* General methods */
 
 void Item::update(sf::Vector2f coordinates, float time)
 {
@@ -140,7 +104,18 @@ void Item::update(sf::Vector2f coordinates, float time)
 	}
 }
 
-bool Item::toggle_move()
+void Item::render(sf::RenderWindow &window)
+{
+	if (has_image_)
+		window.draw(sprite);
+	else
+	{
+		window.draw(background);
+		window.draw(text_name);
+	}
+}
+
+bool Item::toggle_move() // to OFF
 {
 	if (is_move)
 	{
@@ -151,7 +126,7 @@ bool Item::toggle_move()
 	return false;
 }
 
-bool Item::toggle_move(sf::Vector2f cursor_position)
+bool Item::toggle_move(sf::Vector2f cursor_position) // to ON
 {
 	if (!is_move)
 	{
@@ -164,13 +139,32 @@ bool Item::toggle_move(sf::Vector2f cursor_position)
 	return false;
 }
 
-
-void Item::set_opened(Item &target) // static
+void Item::check_out_the_field(float *x, float *y) const
 {
-	if (!target.is_opened_)
+	int y_top_border = Config::borders.top,
+	y_bottom_border = Config::borders.top + Config::borders.height,
+	x_left_border = Config::borders.left,
+	x_right_border = Config::borders.left + Config::borders.width;
+
+	if (*y < y_top_border) *y = y_top_border;
+	if (*y > y_bottom_border - CONFIG.item_side()) *y = y_bottom_border - rect.height;
+	if (*x < x_left_border) *x = x_left_border;
+	if (*x > x_right_border - CONFIG.item_side()) *x = x_right_border - rect.width;
+}
+
+/* Methods for setting data */
+
+void Item::set_position(sf::Vector2f coordinates)
+{
+	check_out_the_field(&coordinates.x, &coordinates.y);
+	rect.left = coordinates.x;
+	rect.top = coordinates.y;
+	if (has_image_)
+		sprite.setPosition(rect.left, rect.top);
+	else
 	{
-		target.is_opened_ = true;
-		number_of_open_items++;
+		background.setPosition(rect.left, rect.top);
+		text_name.setPosition(rect.left, rect.top);
 	}
 }
 
@@ -186,6 +180,19 @@ void Item::set_position_hard(sf::Vector2f coordinates)
 		text_name.setPosition(rect.left, rect.top);
 	}
 }
+
+/* Static methods */
+
+void Item::set_opened(Item &target) // static
+{
+	if (!target.is_opened_)
+	{
+		target.is_opened_ = true;
+		number_of_open_items++;
+	}
+}
+
+/* Methods for obtaining data. All methods are CONST */
 
 unsigned int Item::get_open_items_num() // const too!
 {
@@ -236,5 +243,7 @@ sf::FloatRect Item::get_rect() const
 {
 	return rect;
 }
+
+/* Static variables */
 
 unsigned int Item::number_of_open_items = 0;

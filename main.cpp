@@ -15,6 +15,8 @@
 
 int main(int argc, char const *argv[])
 {
+	//setlocale(LC_ALL, "Rus"); // tests
+
 	Config::font.loadFromFile(CONFIG.font_name());
 
 	bool debug_commands_is_active = false;
@@ -39,20 +41,26 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 
-#define debug_load_game 1
+#define debug_load_game 0
+
 	#if debug_load_game == 0
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
 	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
+
 	#else
 	Game *game = new Modifications_loader("test");
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	game->open_all_items(items_list);
 	game->file_show_full_information();
 	Modifications_loader::create_modification_template();
+
+	for (unsigned int i = 0; i < items_list.size(); ++i) // Opening all elements
+		Item::set_opened(*items_list[i]);
+
 	#endif
+
 #undef debug_load_game
 
 	sf::Clock clock; // World clock
@@ -84,7 +92,7 @@ int main(int argc, char const *argv[])
 	// The string will be set after the startup elements appear
 
 	int item_list_page = 0;
-	int number_of_items_in_row = CONFIG.window_sizes().x / CONFIG.item_side();
+	unsigned int number_of_items_in_row = CONFIG.window_sizes().x / CONFIG.item_side();
 
 	sf::RectangleShape items_list_background; // The rectangle for the array of open elements
 	items_list_background.setPosition(0, 0);
@@ -99,9 +107,9 @@ int main(int argc, char const *argv[])
 		int number = items_to_spawn.size();
 		float spawn_x_center = CONFIG.window_sizes().x / 2, // Center of a circle of spawn of elements
 			  spawn_y_center = (CONFIG.window_sizes().y - Config::borders.top) / 2;
-		for (int i = 0; i < items_to_spawn.size(); ++i)
+		for (unsigned int i = 0; i < items_to_spawn.size(); ++i)
 		{
-			for (int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
+			for (unsigned int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
 			{
 				if (items_to_spawn[i] == items_list[j]->get_id())
 				{
@@ -119,7 +127,7 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 
-	number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
+	number_of_open_items.setString(L"Number of open elements: " + std::to_wstring(Item::get_open_items_num()) + L" / " + std::to_wstring(items_list.size()));
 
 	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "Alchemy", sf::Style::Close);
 	window.setFramerateLimit(CONFIG.fps_limit());
@@ -130,11 +138,14 @@ int main(int argc, char const *argv[])
 		time = clock.getElapsedTime().asSeconds();
 		FPS = 1.0f / time; // Getting game FPS
 
-		autosave_timer += time;
-		if (autosave_timer >= autosave_timer_max)
+		if (autosaving_is_active)
 		{
-			save_game(items_list, items_on_map);
-			autosave_timer = 0;
+			autosave_timer += time;
+			if (autosave_timer >= autosave_timer_max)
+			{
+				save_game(items_list, items_on_map);
+				autosave_timer = 0;
+			}
 		}
 
 		clock.restart();
@@ -157,7 +168,7 @@ int main(int argc, char const *argv[])
 					{
 						if (cursor_position.y < Config::borders.top) // Hit an array of elements
 						{
-							for (int i = item_list_page*number_of_items_in_row;
+							for (unsigned int i = item_list_page*number_of_items_in_row;
 							i < items_list.size();
 							++i)
 							{
@@ -180,7 +191,7 @@ int main(int argc, char const *argv[])
 						else // for (cursor_position.y < Config::borders.top). Hit an game zone
 						{
 							selection_area_is_active = true;
-							for (int i = 0; i < items_on_map.size(); ++i)
+							for (unsigned int i = 0; i < items_on_map.size(); ++i)
 							{
 								if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
 								{
@@ -201,9 +212,10 @@ int main(int argc, char const *argv[])
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) &&
 							game->deletion_elements_RMB())
 					{
-						for (int i = 0; i < items_on_map.size(); ++i)
+						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
-							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
+							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
+								!items_on_map[i]->is_static())
 							{
 								items_to_erase.push_back(i);
 								break;
@@ -220,7 +232,7 @@ int main(int argc, char const *argv[])
 
 					if (selection_area_is_active)
 					{
-						for (int i = 0; i < items_on_map.size(); ++i)
+						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
 							if (selection_area_rect.getGlobalBounds().intersects(items_on_map[i]->get_rect()))
 							{
@@ -237,7 +249,7 @@ int main(int argc, char const *argv[])
 						temp_erase_list[0] = selected_item;
 						bool was_a_reaction = false;
 
-						for (int i = 0; i < items_on_map.size(); ++i)
+						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
 							if (i != selected_item && // Protection against checking the intersection with yourself
 								items_on_map[selected_item]->check_collision(items_on_map[i]->get_rect()))
@@ -245,7 +257,8 @@ int main(int argc, char const *argv[])
 								temp_reagents[1] = items_on_map[i]->get_id();
 								temp_erase_list[1] = i;
 								std::sort(temp_reagents.begin(), temp_reagents.end());
-								for (int r = 0; r < reactions_list.size(); ++r)
+
+								for (unsigned int r = 0; r < reactions_list.size(); ++r)
 								{
 									if (reactions_list[r]->check_reaction(temp_reagents, true))
 									{
@@ -255,6 +268,7 @@ int main(int argc, char const *argv[])
 										break;
 									}
 								}
+
 							}
 
 							if (was_a_reaction)
@@ -290,7 +304,7 @@ int main(int argc, char const *argv[])
 						autosave_timer = 0;
 					}
 					else if (event.key.code == sf::Keyboard::F4)
-						for (int i = 0; i < items_on_map.size(); ++i)
+						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 							items_to_erase.push_back(i);
 
 					/* Activating development commands */
@@ -322,7 +336,7 @@ int main(int argc, char const *argv[])
 			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end()); // sort the items_on_map
 
 			bool was_a_reaction = false;
-			for (int i = 0; i < reactions_list.size(); ++i)
+			for (unsigned int i = 0; i < reactions_list.size(); ++i)
 			{
 				if (reactions_list[i]->check_reaction(reaction_items_IDs, true))
 				{
@@ -338,7 +352,7 @@ int main(int argc, char const *argv[])
 		if (items_to_erase.size() > 0)
 		{
 			std::sort(items_to_erase.begin(), items_to_erase.end());
-			for (int i = 0; i < items_to_erase.size(); ++i)
+			for (unsigned int i = 0; i < items_to_erase.size(); ++i)
 				items_on_map.erase(items_on_map.begin() + items_to_erase[i] - i);
 			items_to_erase.clear();
 		}
@@ -348,9 +362,9 @@ int main(int argc, char const *argv[])
 			int number = items_to_spawn.size();
 			float R = CONFIG.item_side()/1.75 + number*8, angle = 0;
 
-			for (int i = 0; i < items_to_spawn.size(); ++i)
+			for (unsigned int i = 0; i < items_to_spawn.size(); ++i)
 			{
-				for (int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
+				for (unsigned int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
 				{
 					if (items_to_spawn[i] == items_list[j]->get_id() &&
 						!items_list[j]->is_static())
@@ -418,10 +432,11 @@ int main(int argc, char const *argv[])
 			number_of_render_items = number_of_items_in_row * 2,
 			render_number = 0;
 
-			for (int i = first_item, x = 0, y = 0;
+			for (unsigned int i = first_item;
 				i < items_list.size() && render_number < number_of_render_items;
 				++i)
 			{
+				float x = 0, y = 0;
 				if (items_list[i]->is_opened() &&
 					!items_list[i]->is_static())
 				{

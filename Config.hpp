@@ -19,7 +19,7 @@ private:
 	std::string font_name_ = "lucon.ttf";
 
 	void load_from_file();
-	void create_new_config_ini();
+	void create_new_config_ini() const;
 
 	sf::Vector2u w_sizes = sf::Vector2u(800, 600);
 	unsigned int i_side = 64;
@@ -39,7 +39,7 @@ public:
 	std::string font_name() const;
 	unsigned int fps_limit() const;
 
-	/* Static */
+	/* Static methods */
 	static sf::FloatRect borders;
 	static sf::Font font;
 };

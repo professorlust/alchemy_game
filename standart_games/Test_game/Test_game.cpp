@@ -44,7 +44,7 @@ void Test_game::initialization_reactions()
 
 void Test_game::initialization_started_items()
 {
-	for (int i = 0; i < items_list.size(); ++i)
+	for (unsigned int i = 0; i < items_list.size(); ++i)
 	{
 		started_items.push_back(items_list[i].get_id());
 	}

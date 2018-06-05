@@ -18,14 +18,16 @@ void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &rea
 		<< "exit: Close console input" << std::endl;
 
 	else if (input_string == "open_all")
-		game->open_all_items(items_list);
+		for (unsigned int i = 0; i < items_list.size(); ++i)
+			Item::set_opened(*items_list[i]);
+
 
 	else if (input_string == "get_full_game_information")
 		game->file_show_full_information();
 
 	else if (input_string == "create_modification_template")
 		Modifications_loader::create_modification_template();
-	
+
 	else if (input_string == "exit")
 		is_active = false;
 

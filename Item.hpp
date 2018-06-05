@@ -18,12 +18,12 @@ private:
 	bool is_move = false;
 	bool is_static_ = false;
 	bool is_opened_ = false;
-	void check_out_the_field(float *x, float *y);
+	void check_out_the_field(float *x, float *y) const;
 
 	int adjustment_x = 0;
 	int adjustment_y = 0;
 
-	/* Variables for objects with a picture */
+	/* Variables for items with a picture */
 	sf::Texture* texture;
 	sf::Sprite sprite;
 	sf::FloatRect rect;
@@ -36,7 +36,6 @@ private:
 	static unsigned int number_of_open_items;
 
 public:
-	/* Constructors */
 	Item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, const Item_color item_color_ = Item_color(), bool is_static = false);
 	Item(sf::String name, sf::String description, unsigned int ID, const Item_color item_color_ = Item_color(), bool is_static = false);
 	Item(const Item &copy, sf::Vector2f coordinates);
@@ -45,10 +44,12 @@ public:
 	/* General methods */
 	void update(sf::Vector2f coordinates, float time);
 	void render(sf::RenderWindow &window);
-	void set_position(sf::Vector2f coordinates);
-	void set_position_hard(sf::Vector2f coordinates); // set_position() witchout check_out_the_field()
 	bool toggle_move(sf::Vector2f coordinates); // Switching motion to ON
 	bool toggle_move(); // Switching motion to OFF
+
+	/* Methods for setting data */
+	void set_position(sf::Vector2f coordinates);
+	void set_position_hard(sf::Vector2f coordinates); // set_position() witchout check_out_the_field()
 
 	/* Methods for obtaining data. All methods are CONST */
 	bool is_static() const;

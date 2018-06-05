@@ -5,6 +5,11 @@ Modifications_loader::Modifications_loader(std::string file)
 	file_name = file;
 	load_game_data_from_file();
 
+	initialization_textures();
+	initialization_items();
+	initialization_reactions();
+	initialization_started_items();
+
 	number_of_items = items_list.size();
 	number_of_reactions = reactions_list.size();
 }

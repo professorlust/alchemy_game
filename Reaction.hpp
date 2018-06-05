@@ -18,6 +18,7 @@ public:
 	Reaction(const Reaction &reaction);
 	~Reaction();
 
+	/* Methods for setting data */
 	void set_description(sf::String description);
 
 	/* Methods for obtaining data. All methods are CONST */

@@ -4,13 +4,11 @@
 #include "../Game.hpp"
 #include "../Config.hpp"
 
-/* This is a great crutch to download games */
-
 class Modifications_loader : public Game
 {
 private:
 	std::string file_name;
-	std::wstring process; // Kostyl, kotoryy nuzhen dlya vozmozhnosti obrabotki strok
+	std::string process; // Kostyl, kotoryy nuzhen dlya vozmozhnosti obrabotki strok
 	std::string modification_image_folder_name;
 
 	bool load_game_data_from_file();
@@ -28,7 +26,7 @@ private:
 	void initialization_colors(); // only for Modifications_loader
 	void removing_spaces(); // removing spaces from process string
 
-	static const wchar_t comment_flag = '#';
+	static const char comment_flag = '#';
 
 public:
 	Modifications_loader(std::string file);

@@ -5,7 +5,7 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 	std::ifstream save_file(file_name);
 	if (!save_file.is_open())
 	{
-		std::cout << "File not found!";
+		std::cout << "Load save game error: File not found!" << std::endl;
 		return false;
 	}
 
@@ -13,7 +13,7 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 	std::string input_line, buffer;
 	std::getline(save_file, input_line);
 
-	for (int i = 0; i < input_line.size(); ++i)
+	for (unsigned int i = 0; i < input_line.size(); ++i)
 	{
 		while (input_line[i] != ' ') // getting the item ID
 		{
@@ -21,9 +21,9 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 			i++;
 		}
 
-		int item_id = atoi(buffer.c_str());
+		unsigned int item_id = atoi(buffer.c_str());
 
-		for (int i = 0; i < items_list.size(); ++i)
+		for (unsigned int i = 0; i < items_list.size(); ++i)
 		{
 			if (item_id == items_list[i]->get_id())
 			{
@@ -44,10 +44,10 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 			i++;
 		}
 		i++;
-		int item_id = atoi(buffer.c_str());
+		unsigned int item_id = atoi(buffer.c_str());
 		buffer.clear();
 
-		while (input_line[i] != ' ') // getting the item ID
+		while (input_line[i] != ' ') // getting spawn x
 		{
 			buffer += input_line[i];
 			i++;
@@ -56,7 +56,7 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 		int x = atoi(buffer.c_str());
 		buffer.clear();
 
-		while (input_line[i] != ' ') // getting the item ID
+		while (input_line[i] != ' ') // getting spawn y
 		{
 			buffer += input_line[i];
 			i++;
@@ -65,11 +65,12 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 		int y = atoi(buffer.c_str());
 		buffer.clear();
 
-		for (int j = 0; j < items_list.size(); ++j)
+		for (unsigned int j = 0; j < items_list.size(); ++j)
 		{
 			if (item_id == items_list[j]->get_id())
 			{
 				items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(x, y)));
+				break;
 			}
 		}
 	}

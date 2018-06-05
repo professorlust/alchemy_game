@@ -36,19 +36,19 @@ public:
 	Game();
 	~Game();
 
+	/* General methods */
 	void load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<unsigned int> &started_items_copy);
 
 	/* Methods for obtaining data. All methods are CONST */
 	unsigned int get_number_of_items() const;
 	unsigned int get_number_of_reactions() const;
-	void console_show_information() const;
-	void file_show_full_information() const;
 	sf::String get_game_name() const;
 
 	// settings
-	bool deletion_elements_RMB();
+	bool deletion_elements_RMB() const;
 
-	/* Game management methods */
-	void open_all_items(std::vector<Item*> &items) const;
+	// Methods for obtaining game information
+	void console_show_information() const;
+	void file_show_full_information() const;
 };
 #endif

@@ -18,22 +18,6 @@ Config::~Config()
 
 }
 
-void Config::create_new_config_ini()
-{
-	std::ofstream config_file("config.ini");
-
-	config_file
-		<< "width = 800" << std::endl
-		<< "height = 600" << std::endl
-		<< "FPS_limit = 60" << std::endl
-		<< std::endl
-		<< "autosave = true" << std::endl
-		<< "autosave_timer = 180 # Value in seconds. Can not be less than 60" << std::endl
-		<< std::endl
-		<< "modifications_folder = modifications" << std::endl
-		<< "font = lucon.ttf" << std::endl;
-}
-
 void Config::load_from_file()
 {
 	std::string buffer;
@@ -55,7 +39,7 @@ void Config::load_from_file()
 		}
 
 		bool trigger = false; // 0 - argument, 1 - value
-		for (auto i = 0; i < buffer.size() && buffer[i] != '#'; ++i)
+		for (unsigned int i = 0; i < buffer.size() && buffer[i] != '#'; ++i)
 		{
 			if (buffer[i] == '=')
 			{
@@ -108,6 +92,24 @@ void Config::load_from_file()
 	}
 }
 
+/* Methods for obtaining data. All methods are CONST */
+
+void Config::create_new_config_ini() const
+{
+	std::ofstream config_file("config.ini");
+
+	config_file
+		<< "width = 800" << std::endl
+		<< "height = 600" << std::endl
+		<< "FPS_limit = 60" << std::endl
+		<< std::endl
+		<< "autosave = true" << std::endl
+		<< "autosave_timer = 180 # Value in seconds. Can not be less than 60" << std::endl
+		<< std::endl
+		<< "modifications_folder = modifications" << std::endl
+		<< "font = lucon.ttf" << std::endl;
+}
+
 bool Config::autosave() const
 {
 	return autosave_;
@@ -143,7 +145,8 @@ unsigned int Config::fps_limit() const
 	return max_FPS;
 }
 
-/* Statics */
+/* Statics methods */
 const Config CONFIG;
+
 sf::FloatRect Config::borders = sf::FloatRect(0, CONFIG.item_side()*2, CONFIG.window_sizes().x, CONFIG.window_sizes().y - CONFIG.item_side()*2);
 sf::Font Config::font = sf::Font();
