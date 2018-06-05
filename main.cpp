@@ -215,11 +215,7 @@ int main(int argc, char const *argv[])
 						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
 							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
-<<<<<<< HEAD
 								!items_on_map[i]->is_static())
-=======
-							   !items_on_map[i]->is_static()))
->>>>>>> 5b27ca1bd17002375fddde80b8cdf65c9bd3b890
 							{
 								items_to_erase.push_back(i);
 								break;
