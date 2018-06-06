@@ -1,6 +1,6 @@
 #include "save_and_load.hpp"
 
-bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on_map, std::string file_name)
+bool load_save_game(std::vector<Item*> &items_list, unsigned int &open_items_number, std::vector<Item*> &items_on_map, std::string file_name)
 {
 	std::ifstream save_file(file_name);
 	if (!save_file.is_open())
@@ -12,6 +12,7 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 	/* Load open items */
 	std::string input_line, buffer;
 	std::getline(save_file, input_line);
+	open_items_number = 0;
 
 	for (unsigned int i = 0; i < input_line.size(); ++i)
 	{
@@ -27,7 +28,8 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 		{
 			if (item_id == items_list[i]->get_id())
 			{
-				Item::set_opened(*items_list[i]);
+				items_list[i]->set_opened();
+				open_items_number++;
 			}
 		}
 		buffer.clear();
@@ -47,13 +49,15 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 		unsigned int item_id = atoi(buffer.c_str());
 		buffer.clear();
 
+		sf::Vector2f spawn(0, 0);
+
 		while (input_line[i] != ' ') // getting spawn x
 		{
 			buffer += input_line[i];
 			i++;
 		}
 		i++;
-		int x = atoi(buffer.c_str());
+		spawn.x = atoi(buffer.c_str());
 		buffer.clear();
 
 		while (input_line[i] != ' ') // getting spawn y
@@ -62,14 +66,14 @@ bool load_save_game(std::vector<Item*> &items_list, std::vector<Item*> &items_on
 			i++;
 		}
 		i++;
-		int y = atoi(buffer.c_str());
+		spawn.y = atoi(buffer.c_str());
 		buffer.clear();
 
-		for (unsigned int j = 0; j < items_list.size(); ++j)
+		for (auto & item : items_list)
 		{
-			if (item_id == items_list[j]->get_id())
+			if (item_id == item->get_id())
 			{
-				items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(x, y)));
+				items_on_map.push_back(new Item(*item, spawn));
 				break;
 			}
 		}

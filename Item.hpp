@@ -50,6 +50,7 @@ public:
 	/* Methods for setting data */
 	void set_position(sf::Vector2f coordinates);
 	void set_position_hard(sf::Vector2f coordinates); // set_position() witchout check_out_the_field()
+	void set_opened();
 
 	/* Methods for obtaining data. All methods are CONST */
 	bool is_static() const;
@@ -61,9 +62,5 @@ public:
 	sf::FloatRect get_rect() const;
 	sf::String get_name() const;
 	Item_color get_item_colors() const;
-
-	/* Static methods */
-	static void set_opened(Item &target);
-	static unsigned int get_open_items_num(); // const too!
 };
 #endif

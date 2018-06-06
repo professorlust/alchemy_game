@@ -19,7 +19,7 @@ void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &rea
 
 	else if (input_string == "open_all")
 		for (unsigned int i = 0; i < items_list.size(); ++i)
-			Item::set_opened(*items_list[i]);
+			items_list[i]->set_opened();
 
 
 	else if (input_string == "get_full_game_information")

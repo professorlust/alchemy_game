@@ -18,12 +18,12 @@ void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*>
 	reactions_list_copy.clear();
 
 	// Copying elements to main list of elements
-	for (unsigned int i = 0; i < items_list.size(); ++i)
-		items_list_copy.push_back(new Item(items_list[i]));
+	for (auto & item : items_list)
+		items_list_copy.push_back(new Item(item));
 
 	// Copying reactions to main list reactions
-	for (unsigned int i = 0; i < reactions_list.size(); ++i)
-		reactions_list_copy.push_back(new Reaction(reactions_list[i]));
+	for (auto & reaction : reactions_list)
+		reactions_list_copy.push_back(new Reaction(reaction));
 
 	started_items_copy = started_items;
 }

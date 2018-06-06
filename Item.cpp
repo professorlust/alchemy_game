@@ -181,23 +181,12 @@ void Item::set_position_hard(sf::Vector2f coordinates)
 	}
 }
 
-/* Static methods */
-
-void Item::set_opened(Item &target) // static
+void Item::set_opened()
 {
-	if (!target.is_opened_)
-	{
-		target.is_opened_ = true;
-		number_of_open_items++;
-	}
+	is_opened_ = true;
 }
 
 /* Methods for obtaining data. All methods are CONST */
-
-unsigned int Item::get_open_items_num() // const too!
-{
-	return number_of_open_items;
-}
 
 unsigned int Item::get_id() const
 {

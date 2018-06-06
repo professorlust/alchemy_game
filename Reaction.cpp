@@ -44,7 +44,7 @@ bool Reaction::check_reaction(std::vector<Item*> input_reagents, bool is_sorted)
 {
 	if (this->input_reagents.size() == input_reagents.size())
 	{
-		for (unsigned int i = 0; i < input_reagents.size(); ++i)
+		for (int i = 0; i < input_reagents.size(); ++i)
 		{
 			if (this->input_reagents[i] == input_reagents[i]->get_id())
 				return true;

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iterator>
 
 #include "Item.hpp"
 #include "Reaction.hpp"
@@ -40,13 +41,14 @@ int main(int argc, char const *argv[])
 	std::vector<unsigned int> reaction_items_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<unsigned int> items_to_spawn; // IDs of the elemenets that will spawn after reaction
+	unsigned int open_items_number = 0;
 
 #define debug_load_game 0
 
 	#if debug_load_game == 0
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
-	bool save_game_loaded = load_save_game(items_list, items_on_map, "game_save");
+	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
 
@@ -56,8 +58,11 @@ int main(int argc, char const *argv[])
 	game->file_show_full_information();
 	Modifications_loader::create_modification_template();
 
-	for (unsigned int i = 0; i < items_list.size(); ++i) // Opening all elements
-		Item::set_opened(*items_list[i]);
+	for (auto & item : items_list) // Opening all elements
+	{
+		item->set_opened();
+		open_items_number++;
+	}
 
 	#endif
 
@@ -103,22 +108,32 @@ int main(int argc, char const *argv[])
 	// A slightly modified code for the appearance of new elements.
 	if (items_to_spawn.size() > 0)
 	{
-		float R = CONFIG.item_side(), angle = 0;
+		float R = CONFIG.item_side(),
+			angle = 0;
+
 		int number = items_to_spawn.size();
-		float spawn_x_center = CONFIG.window_sizes().x / 2, // Center of a circle of spawn of elements
-			  spawn_y_center = (CONFIG.window_sizes().y - Config::borders.top) / 2;
-		for (unsigned int i = 0; i < items_to_spawn.size(); ++i)
+
+		sf::Vector2f spawn_center
+		(
+			CONFIG.window_sizes().x / 2, // Center of a circle of spawn of elements
+			(CONFIG.window_sizes().y - Config::borders.top) / 2
+		);
+
+		for (auto & spawn_id : items_to_spawn)
 		{
-			for (unsigned int j = 0, spawn_x = 0, spawn_y = 0; j < items_list.size(); ++j)
+			for (auto & item : items_list)
 			{
-				if (items_to_spawn[i] == items_list[j]->get_id())
+				sf::Vector2f spawn(0, 0);
+
+				if (spawn_id == item->get_id())
 				{
 					angle += 6.28/number;
-					spawn_x = spawn_x_center + R*cos(angle),
-					spawn_y = spawn_y_center + R*sin(angle);
+					spawn.x = spawn_center.x + R*cos(angle),
+					spawn.y = spawn_center.y + R*sin(angle);
 
-					Item::set_opened(*items_list[j]);
-					items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
+					item->set_opened();
+					open_items_number++;
+					items_on_map.push_back(new Item(*item, spawn));
 
 					break;
 				}
@@ -127,7 +142,7 @@ int main(int argc, char const *argv[])
 		items_to_spawn.clear();
 	}
 
-	number_of_open_items.setString(L"Number of open elements: " + std::to_wstring(Item::get_open_items_num()) + L" / " + std::to_wstring(items_list.size()));
+	number_of_open_items.setString(L"Number of open elements: " + std::to_wstring(open_items_number) + L" / " + std::to_wstring(items_list.size()));
 
 	sf::RenderWindow window(sf::VideoMode(CONFIG.window_sizes().x, CONFIG.window_sizes().y, 32), "Alchemy", sf::Style::Close);
 	window.setFramerateLimit(CONFIG.fps_limit());
@@ -157,7 +172,9 @@ int main(int argc, char const *argv[])
 			{
 				case sf::Event::Closed:
 				{
-					save_game(items_list, items_on_map);
+					if (autosaving_is_active)
+						save_game(items_list, items_on_map);
+
 					window.close();
 					break;
 				}
@@ -249,21 +266,22 @@ int main(int argc, char const *argv[])
 						temp_erase_list[0] = selected_item;
 						bool was_a_reaction = false;
 
-						for (unsigned int i = 0; i < items_on_map.size(); ++i)
+						unsigned int i = 0;
+						for (auto & item_check : items_on_map)
 						{
 							if (i != selected_item && // Protection against checking the intersection with yourself
-								items_on_map[selected_item]->check_collision(items_on_map[i]->get_rect()))
+								items_on_map[selected_item]->check_collision(item_check->get_rect()))
 							{
-								temp_reagents[1] = items_on_map[i]->get_id();
+								temp_reagents[1] = item_check->get_id();
 								temp_erase_list[1] = i;
 								std::sort(temp_reagents.begin(), temp_reagents.end());
 
-								for (unsigned int r = 0; r < reactions_list.size(); ++r)
+								for (auto & reactions : reactions_list)
 								{
-									if (reactions_list[r]->check_reaction(temp_reagents, true))
+									if (reactions->check_reaction(temp_reagents, true))
 									{
 										was_a_reaction = true;
-										items_to_spawn = reactions_list[r]->get_output_items();
+										items_to_spawn = reactions->get_output_items();
 										items_to_erase = temp_erase_list;
 										break;
 									}
@@ -273,6 +291,8 @@ int main(int argc, char const *argv[])
 
 							if (was_a_reaction)
 								break; // for (int i = 0; i < items_on_map.size(); ++i)
+
+							i++;
 						}
 					}
 
@@ -295,7 +315,7 @@ int main(int argc, char const *argv[])
 						(event.key.code == sf::Keyboard::PageDown) ||
 						(event.key.code == sf::Keyboard::Down) )
 					{
-						if (number_of_items_in_row*(item_list_page+1) < Item::get_open_items_num())
+						if (number_of_items_in_row*(item_list_page+1) < open_items_number)
 							item_list_page++;
 					}
 					else if (event.key.code == sf::Keyboard::F5)
@@ -319,7 +339,8 @@ int main(int argc, char const *argv[])
 			} // end of switch
 		} // end of while(poolEvent);
 
-		// setting real-time size of selection area
+		/* Setting real-time size of selection area */
+
 		if (selection_area_is_active)
 		{
 			// protection against access to the area of opened elements
@@ -330,17 +351,18 @@ int main(int argc, char const *argv[])
 			selection_area_rect.setSize(sf::Vector2f(temp_w, temp_h));
 		}
 
-		// Check reactions
+		/* Check reactions */
+
 		if (reaction_items_IDs.size() > 0)
 		{
 			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end()); // sort the items_on_map
 
 			bool was_a_reaction = false;
-			for (unsigned int i = 0; i < reactions_list.size(); ++i)
+			for (auto & reaction : reactions_list)
 			{
-				if (reactions_list[i]->check_reaction(reaction_items_IDs, true))
+				if (reaction->check_reaction(reaction_items_IDs, true))
 				{
-					items_to_spawn = reactions_list[i]->get_output_items();
+					items_to_spawn = reaction->get_output_items();
 					was_a_reaction = true;
 				}
 			}
@@ -348,7 +370,9 @@ int main(int argc, char const *argv[])
 			if (!was_a_reaction)
 				items_to_erase.clear();
 		}
-		// Removal of elements after the reaction
+
+		/* Removal of elements after the reaction */
+
 		if (items_to_erase.size() > 0)
 		{
 			std::sort(items_to_erase.begin(), items_to_erase.end());
@@ -356,31 +380,38 @@ int main(int argc, char const *argv[])
 				items_on_map.erase(items_on_map.begin() + items_to_erase[i] - i);
 			items_to_erase.clear();
 		}
-		// The spawn of new elements
+
+		/* The spawn of new elements */
+
 		if (items_to_spawn.size() > 0)
 		{
-			int number = items_to_spawn.size();
-			float R = CONFIG.item_side()/1.75 + number*8, angle = 0;
+			float R = CONFIG.item_side(),
+				angle = 0;
 
-			for (unsigned int i = 0; i < items_to_spawn.size(); ++i)
+			int number = items_to_spawn.size();
+
+			for (auto & spawn_id : items_to_spawn)
 			{
-				for (unsigned int j = 0, spawn_x, spawn_y; j < items_list.size(); ++j)
+				for (auto & item : items_list)
 				{
-					if (items_to_spawn[i] == items_list[j]->get_id() &&
-						!items_list[j]->is_static())
+					sf::Vector2f spawn(0, 0);
+
+					if (spawn_id == item->get_id() &&
+						!item->is_static())
 					{
 						angle += 6.28/number;
-						spawn_x = cursor_position.x + R*cos(angle) - CONFIG.item_side()/2,
-						spawn_y = cursor_position.y + R*sin(angle) - CONFIG.item_side()/2;
+						spawn.x = cursor_position.x + R*cos(angle),
+						spawn.y = cursor_position.y + R*sin(angle);
 
-						Item::set_opened(*items_list[j]);
-						items_on_map.push_back(new Item(*items_list[j], sf::Vector2f(spawn_x, spawn_y)));
+						item->set_opened();
+						open_items_number++;
+						items_on_map.push_back(new Item(*item, spawn));
 
 						break;
 					}
 				}
 			}
-			number_of_open_items.setString("Number of open elements: " + std::to_string(Item::get_open_items_num()) + " / " + std::to_string(items_list.size()));
+			number_of_open_items.setString("Number of open elements: " + std::to_string(open_items_number) + " / " + std::to_string(items_list.size()));
 			items_to_spawn.clear();
 		}
 
@@ -389,6 +420,7 @@ int main(int argc, char const *argv[])
 		window.draw(number_of_open_items);
 
 		/* Items on map render */
+
 		{ // unnamed namespace
 			int32_t temp_render_item_name_num = -1; // Render the element name
 			bool temp_contains = false;
@@ -427,6 +459,7 @@ int main(int argc, char const *argv[])
 		} // end of unnamed namespace
 
 		/* Top panel render */
+
 		{ // unnamed namespace
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
