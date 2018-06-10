@@ -42,30 +42,11 @@ int main(int argc, char const *argv[])
 	std::vector<Reagent> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	unsigned int open_items_number = 0;
 
-#define debug_load_game 0
-
-	#if debug_load_game == 0
 	Game *game = new Charodey();
 	game->load_game(items_list, reactions_list, items_to_spawn);
 	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
-
-	#else
-	Game *game = new Modifications_loader("test");
-	game->load_game(items_list, reactions_list, items_to_spawn);
-	game->file_show_full_information();
-	Modifications_loader::create_modification_template();
-
-	for (auto & item : items_list) // Opening all elements
-	{
-		item->set_opened();
-		open_items_number++;
-	}
-
-	#endif
-
-#undef debug_load_game
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -344,8 +325,18 @@ int main(int argc, char const *argv[])
 		if (items_to_erase.size() > 0)
 		{
 			std::sort(items_to_erase.begin(), items_to_erase.end());
+			unsigned int counter = 0;
 			for (unsigned int i = 0; i < items_to_erase.size(); ++i)
-				items_on_map.erase(items_on_map.begin() + items_to_erase[i] - i);
+			{
+				unsigned int del = items_to_erase[i] - counter;
+				if (del <= items_on_map.size()-1 &&
+					items_on_map.size() != 0 &&
+					!items_on_map[del]->is_static()) // del can be > items_on_map.size()-1
+				{
+					items_on_map.erase(items_on_map.begin() + del);
+					counter++;
+				}
+			}
 			items_to_erase.clear();
 		}
 
@@ -360,28 +351,39 @@ int main(int argc, char const *argv[])
 
 			for (auto & reagent : items_to_spawn)
 			{
-				unsigned int spawn_id = reagent.id;
-				for (auto & item : items_list)
+				for (unsigned int i = 0; i < items_list.size(); ++i)
 				{
 					sf::Vector2f spawn(0, 0);
 
-					if (spawn_id == item->get_id() &&
-						!item->is_static())
+					if (reagent.id == items_list[i]->get_id() &&
+						!items_list[i]->is_static())
 					{
-						angle += 6.28/number;
-						spawn.x = spawn_center.x + R*cos(angle),
-						spawn.y = spawn_center.y + R*sin(angle);
-
-						if (!item->is_opened())
+						if (!reagent.remove) // just spawn new element
 						{
-							item->set_opened();
-							open_items_number++;
-							number_of_open_items.setString("Number of open elements: " + std::to_string(open_items_number) + " / " + std::to_string(items_list.size()));
+							angle += 6.28/number;
+							spawn.x = spawn_center.x + R*cos(angle),
+							spawn.y = spawn_center.y + R*sin(angle);
+
+							if (!items_list[i]->is_opened())
+							{
+								items_list[i]->set_opened();
+								open_items_number++;
+								number_of_open_items.setString("Number of open elements: " + std::to_string(open_items_number) + " / " + std::to_string(items_list.size()));
+							}
+
+							items_on_map.push_back(new Item(*items_list[i], spawn));
+
+							break;
 						}
-
-						items_on_map.push_back(new Item(*item, spawn));
-
-						break;
+						else // delete element
+						{
+							for (int k = 0; k < items_on_map.size(); ++k)
+							{
+								if (!items_on_map[k]->is_static() &&
+									reagent.id == items_on_map[k]->get_id())
+									items_on_map.erase(items_on_map.begin() + k);
+							}
+						}
 					}
 				}
 			}
