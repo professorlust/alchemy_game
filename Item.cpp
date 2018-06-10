@@ -37,7 +37,7 @@ Item::Item(sf::String name, sf::String description, unsigned int ID, const Item_
 	item_color = item_color_;
 
 	background.setFillColor(item_color.background);
-	background.setSize(sf::Vector2f(name.getSize()*10, 16));
+	background.setSize(sf::Vector2f(name.getSize()*10, 19));
 
 	text_name.setCharacterSize(16);
 	text_name.setFillColor(item_color.text);
@@ -69,7 +69,7 @@ Item::Item(const Item &copy, sf::Vector2f coordinates)
 		item_color = copy.item_color;
 
 		background.setFillColor(item_color.background);
-		background.setSize(sf::Vector2f(name.getSize()*10, 16));
+		background.setSize(sf::Vector2f(name.getSize()*10, 19));
 
 		text_name.setCharacterSize(16);
 		text_name.setFillColor(item_color.text);

@@ -1,19 +1,33 @@
 #include "Reaction.hpp"
 
-Reaction::Reaction(std::vector<unsigned int> input_reagents, std::vector<unsigned int> output_reagents, bool is_sorted)
+Reaction::Reaction(std::vector<unsigned int> input, std::vector<unsigned int> output, bool is_sorted)
 {
 	if (!is_sorted)
-		std::sort(input_reagents.begin(), input_reagents.end());
+		std::sort(input.begin(), input.end());
 
-	this->input_reagents = input_reagents;
-	this->output_reagents = output_reagents;
+	for (auto & i : output)
+	{
+		output_reagents.push_back(Reagent());
+		output_reagents[output_reagents.size()-1].id = i;
+	}
+
+	input_reagents = input;
 }
 
-Reaction::Reaction(const Reaction &reaction)
+Reaction::Reaction(std::vector<unsigned int> input, std::vector<Reagent> output, bool is_sorted)
 {
-	description = reaction.description;
-	input_reagents = reaction.input_reagents;
-	output_reagents = reaction.output_reagents;
+	if (!is_sorted)
+		std::sort(input.begin(), input.end());
+
+	output_reagents = output;
+	input_reagents = input;
+}
+
+Reaction::Reaction(const Reaction &copy)
+{
+	description = copy.description;
+	input_reagents = copy.input_reagents;
+	output_reagents = copy.output_reagents;
 }
 
 Reaction::~Reaction()
@@ -23,14 +37,14 @@ Reaction::~Reaction()
 
 /* Methods for setting data */
 
-void Reaction::set_description(sf::String description)
+void Reaction::set_description(sf::String description_)
 {
-	this->description = description;
+	description = description_;
 }
 
 /* Methods for obtaining data. All methods are CONST */
 
-std::vector<unsigned int> Reaction::get_output_items() const
+std::vector<Reagent> Reaction::get_output_items() const
 {
 	return output_reagents;
 }
@@ -40,13 +54,13 @@ std::vector<unsigned int> Reaction::get_input_items() const
 	return input_reagents;
 }
 
-bool Reaction::check_reaction(std::vector<Item*> input_reagents, bool is_sorted) const
+bool Reaction::check_reaction(std::vector<Item*> input, bool is_sorted) const
 {
-	if (this->input_reagents.size() == input_reagents.size())
+	if (input_reagents.size() == input.size())
 	{
-		for (int i = 0; i < input_reagents.size(); ++i)
+		for (int i = 0; i < input.size(); ++i)
 		{
-			if (this->input_reagents[i] == input_reagents[i]->get_id())
+			if (input_reagents[i] == input[i]->get_id())
 				return true;
 		}
 	}
@@ -54,10 +68,10 @@ bool Reaction::check_reaction(std::vector<Item*> input_reagents, bool is_sorted)
 	return false;
 }
 
-bool Reaction::check_reaction(std::vector<unsigned int> input_reagents, bool is_sorted) const
+bool Reaction::check_reaction(std::vector<unsigned int> input, bool is_sorted) const
 {
 	if (!is_sorted)
-		std::sort(input_reagents.begin(), input_reagents.end());
+		std::sort(input.begin(), input.end());
 
-	return (input_reagents == this->input_reagents);
+	return (input_reagents == input);
 }

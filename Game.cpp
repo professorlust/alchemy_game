@@ -12,7 +12,7 @@ Game::~Game()
 
 /* General methods */
 
-void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<unsigned int> &started_items_copy)
+void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<Reagent> &started_items_copy)
 {
 	items_list_copy.clear();
 	reactions_list_copy.clear();
@@ -25,7 +25,11 @@ void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*>
 	for (auto & reaction : reactions_list)
 		reactions_list_copy.push_back(new Reaction(reaction));
 
-	started_items_copy = started_items;
+	for (auto & i : started_items)
+	{
+		started_items_copy.push_back(Reagent());
+		started_items_copy[started_items_copy.size()-1].id = i;
+	}
 }
 
 /* Methods for obtaining data. All methods are CONST */
@@ -81,11 +85,16 @@ void Game::file_show_full_information() const
 
 	output_file << divider << std::endl;
 
-	output_file << "Reactions: " << std::endl;
+	output_file << "Reactions: " << std::endl
+	<< "Temporarily does not display information about the conditions for the appearance of elements!" << std::endl;
+
 	for (unsigned int i = 0; i < reactions_list.size(); ++i)
 	{
 		std::vector<unsigned int> input_items = reactions_list[i].get_input_items();
-		std::vector<unsigned int> output_items = reactions_list[i].get_output_items();
+		std::vector<unsigned int> output_items;
+
+		for (auto & i : reactions_list[i].get_output_items())
+			output_items.push_back(i.id);
 
 		output_file << i+1 << ") ";
 		/* Output of input reagents */
