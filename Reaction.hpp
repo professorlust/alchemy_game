@@ -25,7 +25,7 @@ public:
 
 	/* Methods for obtaining data. All methods are CONST */
 	bool check_reaction(std::vector<unsigned int> input, bool is_sorted) const; // Validation reaction by Item IDs. Faster
-	bool check_reaction(std::vector<Item*> input, bool is_sorted) const; // Validation reaction by objects of Item class. Slower
+	bool check_reaction(std::vector<Item> input, bool is_sorted) const; // Validation reaction by objects of Item class. Slower
 	std::vector<Reagent> get_output_items() const;
 	std::vector<unsigned int> get_input_items() const;
 };

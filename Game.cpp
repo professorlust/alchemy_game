@@ -12,18 +12,13 @@ Game::~Game()
 
 /* General methods */
 
-void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<Reagent> &started_items_copy)
+void Game::load_game(std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy)
 {
 	items_list_copy.clear();
 	reactions_list_copy.clear();
 
-	// Copying elements to main list of elements
-	for (auto & item : items_list)
-		items_list_copy.push_back(new Item(item));
-
-	// Copying reactions to main list reactions
-	for (auto & reaction : reactions_list)
-		reactions_list_copy.push_back(new Reaction(reaction));
+	items_list_copy = items_list; // Copying elements to main list of elements
+	reactions_list_copy = reactions_list; // Copying reactions to main list reactions
 
 	for (auto & i : started_items)
 	{
@@ -33,26 +28,6 @@ void Game::load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*>
 }
 
 /* Methods for obtaining data. All methods are CONST */
-
-unsigned int Game::get_number_of_items() const
-{
-	return number_of_items;
-}
-
-unsigned int Game::get_number_of_reactions() const
-{
-	return number_of_reactions;
-}
-
-sf::String Game::get_game_name() const
-{
-	return name;
-}
-
-bool Game::deletion_elements_RMB() const
-{
-	return deletion_elements_RMB_;
-}
 
 void Game::console_show_information() const
 {
@@ -129,4 +104,29 @@ void Game::file_show_full_information() const
 	}
 
 	output_file.close();
+}
+
+unsigned int Game::get_number_of_items() const
+{
+	return number_of_items;
+}
+
+unsigned int Game::get_number_of_reactions() const
+{
+	return number_of_reactions;
+}
+
+sf::String Game::get_game_name() const
+{
+	return name;
+}
+
+bool Game::deletion_elements_RMB() const
+{
+	return deletion_elements_RMB_;
+}
+
+bool Game::render_top_elements_panel() const
+{
+	return top_element_panel_;
 }

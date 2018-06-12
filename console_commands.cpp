@@ -1,6 +1,6 @@
 #include "console_commands.hpp"
 
-void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &reactions_list, Game *game)
+void console_command(std::vector<Item> &items_list, std::vector<Reaction> &reactions_list, Game* game)
 {
 	bool is_active = true;
 
@@ -19,7 +19,7 @@ void console_command(std::vector<Item*> &items_list, std::vector<Reaction*> &rea
 
 	else if (input_string == "open_all")
 		for (unsigned int i = 0; i < items_list.size(); ++i)
-			items_list[i]->set_opened();
+			items_list[i].set_opened();
 
 
 	else if (input_string == "get_full_game_information")

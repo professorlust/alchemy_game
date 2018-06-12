@@ -37,7 +37,7 @@ public:
 	~Game();
 
 	/* General methods */
-	void load_game(std::vector<Item*> &items_list_copy, std::vector<Reaction*> &reactions_list_copy, std::vector<Reagent> &started_items_copy);
+	void load_game(std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy);
 
 	/* Methods for obtaining data. All methods are CONST */
 	unsigned int get_number_of_items() const;
@@ -46,6 +46,7 @@ public:
 
 	// settings
 	bool deletion_elements_RMB() const;
+	bool render_top_elements_panel() const;
 
 	// Methods for obtaining game information
 	void console_show_information() const;

@@ -54,13 +54,13 @@ std::vector<unsigned int> Reaction::get_input_items() const
 	return input_reagents;
 }
 
-bool Reaction::check_reaction(std::vector<Item*> input, bool is_sorted) const
+bool Reaction::check_reaction(std::vector<Item> input, bool is_sorted) const
 {
 	if (input_reagents.size() == input.size())
 	{
 		for (int i = 0; i < input.size(); ++i)
 		{
-			if (input_reagents[i] == input[i]->get_id())
+			if (input_reagents[i] == input[i].get_id())
 				return true;
 		}
 	}

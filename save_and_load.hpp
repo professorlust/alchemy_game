@@ -6,6 +6,6 @@
 #include <vector>
 #include "Item.hpp"
 
-void save_game(std::vector<Item*> items_list, std::vector<Item*> items_on_map, std::string file_name = "game_save");
-bool load_save_game(std::vector<Item*> &items_list, unsigned int &open_items_number, std::vector<Item*> &items_on_map, std::string file_name);
+void save_game(std::vector<Item> items_list, std::vector<Item> items_on_map, std::string file_name);
+bool load_save_game(std::vector<Item> &items_list, unsigned int &open_items_number, std::vector<Item> &items_on_map, std::string file_name);
 #endif

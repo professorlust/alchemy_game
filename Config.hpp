@@ -41,6 +41,7 @@ public:
 
 	/* Static methods */
 	static sf::FloatRect borders;
+	static void set_borders(sf::FloatRect rect);
 	static sf::Font font;
 };
 

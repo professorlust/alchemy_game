@@ -34,9 +34,9 @@ int main(int argc, char const *argv[])
 	float autosave_timer_max = CONFIG.autosave_timer();
 	float autosave_timer = 0;
 
-	std::vector<Item*> items_list; // All lists is loaded from the Game*
-	std::vector<Item*> items_on_map;
-	std::vector<Reaction*> reactions_list;
+	std::vector<Item> items_list; // All lists is loaded from the Game*
+	std::vector<Item> items_on_map;
+	std::vector<Reaction> reactions_list;
 	std::vector<unsigned int> reaction_items_IDs; // IDs of the elements that react in this frame
 	std::vector<unsigned int> items_to_erase; // Positions of the elements in the array items_on_map to be deleted
 	std::vector<Reagent> items_to_spawn; // IDs of the elemenets that will spawn after reaction
@@ -47,6 +47,9 @@ int main(int argc, char const *argv[])
 	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
+
+	if (!game->render_top_elements_panel())
+		Config::set_borders(sf::FloatRect(0, 0, CONFIG.window_sizes().x, CONFIG.window_sizes().y));
 
 	sf::Clock clock; // World clock
 	float time = 0; // Time cash
@@ -106,7 +109,7 @@ int main(int argc, char const *argv[])
 			autosave_timer += time;
 			if (autosave_timer >= autosave_timer_max)
 			{
-				save_game(items_list, items_on_map);
+				save_game(items_list, items_on_map, "game_save");
 				autosave_timer = 0;
 			}
 		}
@@ -121,7 +124,7 @@ int main(int argc, char const *argv[])
 				case sf::Event::Closed:
 				{
 					if (autosaving_is_active)
-						save_game(items_list, items_on_map);
+						save_game(items_list, items_on_map, "game_save");
 
 					window.close();
 					break;
@@ -137,18 +140,18 @@ int main(int argc, char const *argv[])
 							i < items_list.size();
 							++i)
 							{
-								if (items_list[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
-									items_list[i]->is_opened() &&
-									!items_list[i]->is_static())
+								if (items_list[i].get_rect().contains(cursor_position.x, cursor_position.y) &&
+									items_list[i].is_opened() &&
+									!items_list[i].is_static())
 								{
 									float spawn_x = cursor_position.x;
-									float spawn_y = Config::borders.top; // Config::borders.top - items_list[i]->get_rect().top;
-									items_on_map.push_back(new Item(*items_list[i], sf::Vector2f(spawn_x, spawn_y)));
+									float spawn_y = Config::borders.top; // Config::borders.top - items_list[i].get_rect().top;
+									items_on_map.push_back(Item(items_list[i], sf::Vector2f(spawn_x, spawn_y)));
 
 									selected_item = 0;
 									std::swap(items_on_map[items_on_map.size()-1], items_on_map[0]);
 
-									items_on_map[0]->toggle_move(sf::Vector2f(spawn_x, spawn_y));
+									items_on_map[0].toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									break;
 								}
 							}
@@ -158,9 +161,9 @@ int main(int argc, char const *argv[])
 							selection_area_is_active = true;
 							for (unsigned int i = 0; i < items_on_map.size(); ++i)
 							{
-								if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y))
+								if (items_on_map[i].get_rect().contains(cursor_position.x, cursor_position.y))
 								{
-									if (items_on_map[i]->toggle_move(cursor_position))
+									if (items_on_map[i].toggle_move(cursor_position))
 									{
 										selection_area_is_active = false;
 										selected_item = 0;
@@ -179,8 +182,8 @@ int main(int argc, char const *argv[])
 					{
 						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
-							if (items_on_map[i]->get_rect().contains(cursor_position.x, cursor_position.y) &&
-								!items_on_map[i]->is_static())
+							if (items_on_map[i].get_rect().contains(cursor_position.x, cursor_position.y) &&
+								!items_on_map[i].is_static())
 							{
 								items_to_erase.push_back(i);
 								break;
@@ -193,44 +196,47 @@ int main(int argc, char const *argv[])
 				case sf::Event::MouseButtonReleased:
 				{
 					if (items_on_map.size() != 0)
-						items_on_map[0]->toggle_move();
+						items_on_map[0].toggle_move();
 
 					if (selection_area_is_active)
 					{
 						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
-							if (selection_area_rect.getGlobalBounds().intersects(items_on_map[i]->get_rect()))
+							if (selection_area_rect.getGlobalBounds().intersects(items_on_map[i].get_rect()))
 							{
-								reaction_items_IDs.push_back(items_on_map[i]->get_id());
+								reaction_items_IDs.push_back(items_on_map[i].get_id());
 								items_to_erase.push_back(i);
 							}
 						}
-					}
+						spawn_center = cursor_position;
+ 					}
 					else if (selected_item >= 0)
 					{
 						std::vector<unsigned int> temp_reagents(2);
 						std::vector<unsigned int> temp_erase_list(2);
-						temp_reagents[0] = items_on_map[selected_item]->get_id();
+						temp_reagents[0] = items_on_map[selected_item].get_id();
 						temp_erase_list[0] = selected_item;
 						bool was_a_reaction = false;
 
-						unsigned int i = 0;
-						for (auto & item_check : items_on_map)
+						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
 							if (i != selected_item && // Protection against checking the intersection with yourself
-								items_on_map[selected_item]->check_collision(item_check->get_rect()))
+								items_on_map[selected_item].check_collision(items_on_map[i].get_rect()))
 							{
-								temp_reagents[1] = item_check->get_id();
+								temp_reagents[1] = items_on_map[i].get_id();
 								temp_erase_list[1] = i;
 								std::sort(temp_reagents.begin(), temp_reagents.end());
 
 								for (auto & reaction : reactions_list)
 								{
-									if (reaction->check_reaction(temp_reagents, true))
+									if (reaction.check_reaction(temp_reagents, true))
 									{
 										was_a_reaction = true;
-										items_to_spawn = reaction->get_output_items();
+										items_to_spawn = reaction.get_output_items();
 										items_to_erase = temp_erase_list;
+
+										spawn_center.x = (items_on_map[0].get_rect().left + items_on_map[i].get_rect().left)/2;
+										spawn_center.y = (items_on_map[0].get_rect().top + items_on_map[i].get_rect().top)/2;
 										break;
 									}
 								}
@@ -239,14 +245,12 @@ int main(int argc, char const *argv[])
 
 							if (was_a_reaction)
 								break; // for (int i = 0; i < items_on_map.size(); ++i)
-
-							i++;
 						}
 					}
 
 					selected_item = -1;
 					selection_area_is_active = false;
-					spawn_center = cursor_position;
+					//spawn_center = cursor_position;
 					break;
 				}
 
@@ -269,7 +273,7 @@ int main(int argc, char const *argv[])
 					}
 					else if (event.key.code == sf::Keyboard::F5)
 					{
-						save_game(items_list, items_on_map);
+						save_game(items_list, items_on_map, "game_save");
 						autosave_timer = 0;
 					}
 					else if (event.key.code == sf::Keyboard::F4)
@@ -309,9 +313,9 @@ int main(int argc, char const *argv[])
 			bool was_a_reaction = false;
 			for (auto & reaction : reactions_list)
 			{
-				if (reaction->check_reaction(reaction_items_IDs, true))
+				if (reaction.check_reaction(reaction_items_IDs, true))
 				{
-					items_to_spawn = reaction->get_output_items();
+					items_to_spawn = reaction.get_output_items();
 					was_a_reaction = true;
 				}
 			}
@@ -331,7 +335,7 @@ int main(int argc, char const *argv[])
 				unsigned int del = items_to_erase[i] - counter;
 				if (del <= items_on_map.size()-1 &&
 					items_on_map.size() != 0 &&
-					!items_on_map[del]->is_static()) // del can be > items_on_map.size()-1
+					!items_on_map[del].is_static()) // del can be > items_on_map.size()-1
 				{
 					items_on_map.erase(items_on_map.begin() + del);
 					counter++;
@@ -355,8 +359,8 @@ int main(int argc, char const *argv[])
 				{
 					sf::Vector2f spawn(0, 0);
 
-					if (reagent.id == items_list[i]->get_id() &&
-						!items_list[i]->is_static())
+					if (reagent.id == items_list[i].get_id() &&
+						!items_list[i].is_static())
 					{
 						if (!reagent.remove) // just spawn new element
 						{
@@ -364,14 +368,14 @@ int main(int argc, char const *argv[])
 							spawn.x = spawn_center.x + R*cos(angle),
 							spawn.y = spawn_center.y + R*sin(angle);
 
-							if (!items_list[i]->is_opened())
+							if (!items_list[i].is_opened())
 							{
-								items_list[i]->set_opened();
+								items_list[i].set_opened();
 								open_items_number++;
 								number_of_open_items.setString("Number of open elements: " + std::to_string(open_items_number) + " / " + std::to_string(items_list.size()));
 							}
 
-							items_on_map.push_back(new Item(*items_list[i], spawn));
+							items_on_map.push_back(Item(items_list[i], spawn));
 
 							break;
 						}
@@ -379,8 +383,8 @@ int main(int argc, char const *argv[])
 						{
 							for (int k = 0; k < items_on_map.size(); ++k)
 							{
-								if (!items_on_map[k]->is_static() &&
-									reagent.id == items_on_map[k]->get_id())
+								if (!items_on_map[k].is_static() &&
+									reagent.id == items_on_map[k].get_id())
 									items_on_map.erase(items_on_map.begin() + k);
 							}
 						}
@@ -392,7 +396,8 @@ int main(int argc, char const *argv[])
 
 		window.clear(sf::Color(255, 255, 255));
 
-		window.draw(number_of_open_items);
+		if (game->render_top_elements_panel())
+			window.draw(number_of_open_items);
 
 		/* Items on map render */
 
@@ -401,11 +406,11 @@ int main(int argc, char const *argv[])
 			bool temp_contains = false;
 			for (int i = items_on_map.size()-1; i >= 0; --i)
 			{
-				items_on_map[i]->update(cursor_position, time);
-				items_on_map[i]->render(window);
+				items_on_map[i].update(cursor_position, time);
+				items_on_map[i].render(window);
 
-				if (items_on_map[i]->rect_contains_cursor(cursor_position) &&
-				    items_on_map[i]->has_image())
+				if (items_on_map[i].rect_contains_cursor(cursor_position) &&
+				    items_on_map[i].has_image())
 				{
 					temp_contains = true;
 					temp_render_item_name_num = i;
@@ -417,10 +422,10 @@ int main(int argc, char const *argv[])
 				float temp_x = cursor_position.x + 15;
 				float temp_y = cursor_position.y + 10;
 
-				item_name_background.setSize(sf::Vector2f(items_on_map[temp_render_item_name_num]->get_name().getSize()*10, 19));
+				item_name_background.setSize(sf::Vector2f(items_on_map[temp_render_item_name_num].get_name().getSize()*10, 19));
 				item_name_background.setPosition(temp_x, temp_y);
 
-				item_name_text.setString(items_on_map[temp_render_item_name_num]->get_name());
+				item_name_text.setString(items_on_map[temp_render_item_name_num].get_name());
 				item_name_text.setPosition(temp_x, temp_y);
 
 				window.draw(item_name_background);
@@ -430,7 +435,8 @@ int main(int argc, char const *argv[])
 			if (selection_area_is_active)
 				window.draw(selection_area_rect);
 
-			window.draw(items_list_background);
+			if (game->render_top_elements_panel())
+				window.draw(items_list_background);
 		} // end of unnamed namespace
 
 		/* Top panel render */
@@ -439,19 +445,19 @@ int main(int argc, char const *argv[])
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
 			render_number = 0;
-
-			for (unsigned int i = first_item;
+			if (game->render_top_elements_panel())
+				for (unsigned int i = first_item;
 				i < items_list.size() && render_number < number_of_render_items;
 				++i)
 			{
 				float x = 0, y = 0;
-				if (items_list[i]->is_opened() &&
-					!items_list[i]->is_static())
+				if (items_list[i].is_opened() &&
+					!items_list[i].is_static())
 				{
 					x = (render_number < number_of_items_in_row) ? render_number*CONFIG.item_side() : (render_number-number_of_items_in_row)*CONFIG.item_side();
 					y = (render_number < number_of_items_in_row) ? 0 : CONFIG.item_side();
-					items_list[i]->set_position_hard(sf::Vector2f(x, y));
-					items_list[i]->render(window);
+					items_list[i].set_position_hard(sf::Vector2f(x, y));
+					items_list[i].render(window);
 
 					render_number++;
 				}

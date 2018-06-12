@@ -1,6 +1,6 @@
 #include "save_and_load.hpp"
 
-bool load_save_game(std::vector<Item*> &items_list, unsigned int &open_items_number, std::vector<Item*> &items_on_map, std::string file_name)
+bool load_save_game(std::vector<Item> &items_list, unsigned int &open_items_number, std::vector<Item> &items_on_map, std::string file_name)
 {
 	std::ifstream save_file(file_name);
 	if (!save_file.is_open())
@@ -26,9 +26,9 @@ bool load_save_game(std::vector<Item*> &items_list, unsigned int &open_items_num
 
 		for (unsigned int i = 0; i < items_list.size(); ++i)
 		{
-			if (item_id == items_list[i]->get_id())
+			if (item_id == items_list[i].get_id())
 			{
-				items_list[i]->set_opened();
+				items_list[i].set_opened();
 				open_items_number++;
 			}
 		}
@@ -71,9 +71,9 @@ bool load_save_game(std::vector<Item*> &items_list, unsigned int &open_items_num
 
 		for (auto & item : items_list)
 		{
-			if (item_id == item->get_id())
+			if (item_id == item.get_id())
 			{
-				items_on_map.push_back(new Item(*item, spawn));
+				items_on_map.push_back(Item(item, spawn));
 				break;
 			}
 		}

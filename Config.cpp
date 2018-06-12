@@ -150,3 +150,8 @@ const Config CONFIG;
 
 sf::FloatRect Config::borders = sf::FloatRect(0, CONFIG.item_side()*2, CONFIG.window_sizes().x, CONFIG.window_sizes().y - CONFIG.item_side()*2);
 sf::Font Config::font = sf::Font();
+
+void Config::set_borders(sf::FloatRect rect)
+{
+	borders = rect;
+}
