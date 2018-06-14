@@ -4,9 +4,6 @@ Modifications_loader::Modifications_loader(std::string file)
 {
 	file_name = file;
 	load_game_data_from_file();
-
-	number_of_items = items_list.size();
-	number_of_reactions = reactions_list.size();
 }
 
 Modifications_loader::~Modifications_loader()

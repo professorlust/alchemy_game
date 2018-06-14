@@ -1,6 +1,6 @@
 #include "console_commands.hpp"
 
-void console_command(std::vector<Item> &items_list, std::vector<Reaction> &reactions_list, Game* game)
+void console_command(std::vector<Item> &items_list, std::vector<Reaction> &reactions_list, Game game)
 {
 	bool is_active = true;
 
@@ -13,7 +13,7 @@ void console_command(std::vector<Item> &items_list, std::vector<Reaction> &react
 	if (input_string == "help")
 		std::cout << "List of commands:" << std::endl
 		<< "open_all: Opens all the elements in the game" << std::endl
-		<< "get_full_game_information: Creates a file with information about the running game" << std::endl
+		//<< "get_full_game_information: Creates a file with information about the running game" << std::endl
 		<< "create_modification_template: Creates a template with a modification code" << std::endl
 		<< "exit: Close console input" << std::endl;
 
@@ -22,8 +22,8 @@ void console_command(std::vector<Item> &items_list, std::vector<Reaction> &react
 			items_list[i].set_opened();
 
 
-	else if (input_string == "get_full_game_information")
-		game->file_show_full_information();
+	// else if (input_string == "get_full_game_information")
+	// 	game.file_show_full_information();
 
 	else if (input_string == "create_modification_template")
 		Modifications_loader::create_modification_template();
