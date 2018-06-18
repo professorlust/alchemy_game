@@ -1,10 +1,10 @@
-#include "../Game.hpp"
+#include "Standart_games.hpp"
 
-void Game::charodey(std::vector <sf::Texture> &item_textures_copy, std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy)
+void Standart_games::charodey(std::vector<sf::Texture> &item_textures_copy, std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy, Game_settings &game_settings)
 {
-	name = "Charodey";
-	author = "default";
-	description = "Standard test game. FOR THIS TIME IS NOT FINISHED\nYa inglish-man &blacksun&";
+	game_settings.name = "Charodey";
+	game_settings.author = "default";
+	game_settings.description = "Standard test game. FOR THIS TIME IS NOT FINISHED\nYa inglish-man &blacksun&";
 
 	int number_of_textures = 60;
 	for (int i = 0; i < number_of_textures; ++i)

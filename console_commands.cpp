@@ -1,6 +1,6 @@
 #include "console_commands.hpp"
 
-void console_command(std::vector<Item> &items_list, std::vector<Reaction> &reactions_list, Game game)
+void console_command(std::vector<Item> &items_list, std::vector<Reaction> &reactions_list, Game_settings game_settings)
 {
 	bool is_active = true;
 

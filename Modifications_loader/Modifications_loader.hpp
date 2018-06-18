@@ -1,39 +1,34 @@
 #ifndef MODIFICATIONS_LOADER
 #define MODIFICATIONS_LOADER
 
-#include "../Game.hpp"
+#include <string>
+#include <fstream>
+#include <iostream>
+
+#include "../Game_settings.hpp"
+#include "../Item.hpp"
+#include "../Reaction.hpp"
+#include "../Reagent.hpp"
+#include "../Item_color.hpp"
 #include "../Config.hpp"
 
-/* This is a great crutch to download games */
+// = = = = = = = = = = = = = = = =
+		 /* T E S T I N G ! ! ! */
+// = = = = = = = = = = = = = = = =
 
-class Modifications_loader : public Game
+namespace Modifications_loader
 {
-private:
-	std::string file_name;
-	std::wstring process; // Kostyl, kotoryy nuzhen dlya vozmozhnosti obrabotki strok
-	std::string modification_image_folder_name;
+	/* General processing methods */
+	void load_modification(std::string file_name, std::vector <sf::Texture> &item_textures_copy, std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy, Game_settings &game_settings);
+	Item_color item_color_processing(std::wstring string, std::vector<Item_color> items_colors);
+	Item item_processing(std::wstring string, std::vector <sf::Texture> &item_textures);
+	Reaction reaction_processing(std::wstring string);
+	Reagent started_reagent_processing(std::wstring string, const std::vector<Item> items_list);
+	void game_settings_processing(std::wstring, Game_settings &game_settings);
 
-	bool load_game_data_from_file();
-	std::vector<Item_color> item_colors;
-
-	/* Virtual methods reinitialize */
-	// In this class they only process lines.
-	// This methods process the string "process"
-	void initialization_textures();
-	void initialization_items();
-	void initialization_reactions();
-	void initialization_started_items();
-	void initialization_settings();
-
-	void initialization_colors(); // only for Modifications_loader
-	void removing_spaces(); // removing spaces from process string
-
-	static const wchar_t comment_flag = '#';
-
-public:
-	Modifications_loader(std::string file);
-	~Modifications_loader();
-
-	static void create_modification_template();
-};
+	/* Methods for creating modifications players */
+	void create_modification_template();
+	void remove_spaces(std::wstring &string, bool remove_quotes = false);
+	// void debug_load_modification_console_log();
+}
 #endif

@@ -8,6 +8,7 @@
 #include "Item.hpp"
 #include "Reaction.hpp"
 #include "Config.hpp"
+#include "standart_games/Standart_games.hpp"
 #include "Modifications_loader/Modifications_loader.hpp"
 #include "save_and_load.hpp"
 #include "console_commands.hpp"
@@ -33,7 +34,8 @@ int main(int argc, char const *argv[])
 	float autosave_timer_max = CONFIG.autosave_timer();
 	float autosave_timer = 0;
 
-	std::vector <sf::Texture> item_textures; // All lists is loaded from the Game
+	Game_settings game_settings;
+	std::vector <sf::Texture> item_textures; // All lists is loaded from the game loader function
 	std::vector<Item> items_list;
 	std::vector<Item> items_on_map;
 	std::vector<Reaction> reactions_list;
@@ -42,13 +44,14 @@ int main(int argc, char const *argv[])
 	std::vector<Reagent> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	unsigned int open_items_number = 0;
 
-	Game game;
-	game.charodey(item_textures, items_list, reactions_list, items_to_spawn);
+	Modifications_loader::load_modification("test", item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+
+	Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
 	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
 	if (save_game_loaded)
 		items_to_spawn.clear();
 
-	if (!game.render_top_elements_panel())
+	if (!game_settings.render_top_elements_panel)
 		Config::set_borders(sf::FloatRect(0, 0, CONFIG.window_sizes().x, CONFIG.window_sizes().y));
 
 	sf::Clock clock; // World clock
@@ -178,7 +181,7 @@ int main(int argc, char const *argv[])
 						}
 					}
 					else if (sf::Mouse::isButtonPressed(sf::Mouse::Right) &&
-							game.deletion_elements_RMB())
+							game_settings.deletion_elements_RMB)
 					{
 						for (unsigned int i = 0; i < items_on_map.size(); ++i)
 						{
@@ -283,7 +286,7 @@ int main(int argc, char const *argv[])
 					/* Activating development commands */
 					else if (event.key.code == sf::Keyboard::Tilde
 						&& debug_commands_is_active)
-						console_command(items_list, reactions_list, game);
+						console_command(items_list, reactions_list, game_settings);
 				}
 
 				default:
@@ -396,7 +399,7 @@ int main(int argc, char const *argv[])
 
 		window.clear(sf::Color(255, 255, 255));
 
-		if (game.render_top_elements_panel())
+		if (game_settings.render_top_elements_panel)
 			window.draw(number_of_open_items);
 
 		/* Items on map render */
@@ -435,7 +438,7 @@ int main(int argc, char const *argv[])
 			if (selection_area_is_active)
 				window.draw(selection_area_rect);
 
-			if (game.render_top_elements_panel())
+			if (game_settings.render_top_elements_panel)
 				window.draw(items_list_background);
 		} // end of unnamed namespace
 
@@ -445,7 +448,7 @@ int main(int argc, char const *argv[])
 			unsigned int first_item = item_list_page*number_of_items_in_row,
 			number_of_render_items = number_of_items_in_row * 2,
 			render_number = 0;
-			if (game.render_top_elements_panel())
+			if (game_settings.render_top_elements_panel)
 				for (unsigned int i = first_item;
 				i < items_list.size() && render_number < number_of_render_items;
 				++i)
