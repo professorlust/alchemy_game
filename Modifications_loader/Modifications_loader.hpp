@@ -19,7 +19,7 @@
 namespace Modifications_loader
 {
 	/* General processing methods */
-	void load_modification(std::string file_name, std::vector <sf::Texture> &item_textures_copy, std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy, Game_settings &game_settings);
+	void load_modification(std::string file_name, std::vector <sf::Texture*> &item_textures_copy, std::vector<Item> &items_list_copy, std::vector<Reaction> &reactions_list_copy, std::vector<Reagent> &started_items_copy, Game_settings &game_settings);
 	Item_color item_color_processing(std::wstring string, std::vector<Item_color> items_colors);
 	Item item_processing(std::wstring string, std::vector <sf::Texture> &item_textures);
 	Reaction reaction_processing(std::wstring string);

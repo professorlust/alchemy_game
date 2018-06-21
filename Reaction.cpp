@@ -8,7 +8,7 @@ Reaction::Reaction(std::vector<unsigned int> input, std::vector<unsigned int> ou
 	for (auto & i : output)
 	{
 		output_reagents.push_back(Reagent());
-		output_reagents[output_reagents.size()-1].id = i;
+		output_reagents.back().id = i;
 	}
 
 	input_reagents = input;

@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
 	float autosave_timer = 0;
 
 	Game_settings game_settings;
-	std::vector <sf::Texture> item_textures; // All lists is loaded from the game loader function
+	std::vector <sf::Texture*> item_textures; // All lists is loaded from the game loader function
 	std::vector<Item> items_list;
 	std::vector<Item> items_on_map;
 	std::vector<Reaction> reactions_list;
@@ -45,11 +45,13 @@ int main(int argc, char const *argv[])
 	unsigned int open_items_number = 0;
 
 	Modifications_loader::load_modification("test", item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	for (auto & i : items_list)
+		i.set_opened();
 
-	Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
-	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
-	if (save_game_loaded)
-		items_to_spawn.clear();
+	// Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	// bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
+	// if (save_game_loaded)
+	// 	items_to_spawn.clear();
 
 	if (!game_settings.render_top_elements_panel)
 		Config::set_borders(sf::FloatRect(0, 0, CONFIG.window_sizes().x, CONFIG.window_sizes().y));
@@ -152,7 +154,7 @@ int main(int argc, char const *argv[])
 									items_on_map.push_back(Item(items_list[i], sf::Vector2f(spawn_x, spawn_y)));
 
 									selected_item = 0;
-									std::swap(items_on_map[items_on_map.size()-1], items_on_map[0]);
+									std::swap(items_on_map.back(), items_on_map[0]);
 
 									items_on_map[0].toggle_move(sf::Vector2f(spawn_x, spawn_y));
 									break;
