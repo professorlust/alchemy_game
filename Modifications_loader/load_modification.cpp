@@ -228,7 +228,7 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 					type = TIMER;
 				else if (buffer.find(L"counter") != std::string::npos)
 					type = COUNTER;
-				else 
+				else
 					break;
 
 				/* Skipping unnecessary spaces */
@@ -277,18 +277,18 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 				bool is_static = false;
 				bool has_image = false;
 				std::wstring description;
-				unsigned int color = 0;
+				Item_color color;
 
 				for (i; i < process.size(); ++i)
 				{
 					if (process[i] == L'#')
 						break;
 
-					if (process[i] == L'(' || 
+					if (process[i] == L'(' ||
 						process[i] == ')')
 						in_quotes = !in_quotes;
 
-					// Getting a separate argument 
+					// Getting a separate argument
 					if ( (process[i] == L' ' || i == process.size()-1) &&
 						!in_quotes)
 					{
@@ -329,12 +329,39 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 							description = value;
 						else if (argument.find(L"color") != std::string::npos)
 						{
-							for (int j = 0; j < items_colors.size(); ++j)
+							if (value.find(L"Air") != std::string::npos)
+								color = AIR_COLOR;
+							else if (value.find(L"Fire") != std::string::npos)
+								color = FIRE_COLOR;
+							else if (value.find(L"Earth") != std::string::npos)
+								color = EARTH_COLOR;
+							else if (value.find(L"Water") != std::string::npos)
+								color = WATER_COLOR;
+							else if (value.find(L"Light green") != std::string::npos)
+								color = LIGHT_GREEN_COLOR;
+							else if (value.find(L"Purple") != std::string::npos)
+								color = PURPLE_COLOR;
+							else if (value.find(L"Grey") != std::string::npos)
+								color = GREY_COLOR;
+							else if (value.find(L"Light pink") != std::string::npos)
+								color = LIGHT_PINK_COLOR;
+							else if (value.find(L"Dark") != std::string::npos)
+								color = DARK_COLOR;
+							else if (value.find(L"Dark blue") != std::string::npos)
+								color = DARK_RED_COLOR;
+							else if (value.find(L"Orange") != std::string::npos)
+								color = ORANGE_COLOR;
+							else if (value.find(L"Dark green") != std::string::npos)
+								color = DARK_GREEN_COLOR;
+							else
 							{
-								if (items_colors[j].name.toWideString() == value)
+								for (int j = 0; j < items_colors.size(); ++j)
 								{
-									color = j;
-									break;
+									if (items_colors[j].name.toWideString() == value)
+									{
+										color = items_colors[j];
+										break;
+									}
 								}
 							}
 						}
@@ -351,7 +378,7 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 					if (has_image)
 						items_list_copy.emplace_back(item_textures_copy.back(), name, description, items_list_copy.size()+1);
 					else
-						items_list_copy.emplace_back(name, description, items_list_copy.size()+1, items_colors[color]);
+						items_list_copy.emplace_back(name, description, items_list_copy.size()+1, color);
 				}
 				break;
 			}
@@ -361,7 +388,7 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 				remove_spaces(process, true);
 
 				unsigned int i = 0;
-				bool input_block = true;
+				bool input_block = true, input_block_trigger = false;
 
 				std::wstring reagent_buffer;
 
@@ -377,18 +404,108 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 						if (i == process.size()-1)
 							reagent_buffer += process[i];
 
-						// reagent_buffer block! =============
+						// getting argumens
 						unsigned int j = 0;
-						std::wstring argument, value;
-
-						std::wcout << "reagent_buffer: " << reagent_buffer << std::endl
-						<< "Argument: " << argument << std::endl
-						<< "Value: " << value << std::endl << std::endl;
+						std::wstring reagent_name, value;
 
 						if (process[i] == L'=')
+							input_block_trigger = true;
+
+						for (j; j < reagent_buffer.size(); j++)
+						{
+							if (reagent_buffer[j] == L'[')
+							{
+								j++;
+								break;
+							}
+
+							reagent_name += reagent_buffer[j];
+						}
+
+						for (j; j < reagent_buffer.size(); j++)
+						{
+							if (reagent_buffer[j] == L']')
+							{
+								j++;
+								break;
+							}
+
+							value += reagent_buffer[j];
+						}
+
+						if (!input_block)
+						{
+							output.push_back(Reagent{get_item_id_by_name(reagent_name, items_list_copy)});
+
+							if (value.find(L"random") != std::string::npos)
+							{
+								bool trigger = false;
+								std::wstring int_wstr = L"0";
+
+								for (auto & c : value)
+								{
+									if (c == L'(' ||
+										c == L')')
+									{
+										trigger = true;
+										continue;
+									}
+
+									if (trigger)
+										int_wstr += c;
+								}
+
+								output.back().chance = std::stof(int_wstr)*100;
+
+								if (output.back().chance > 10000)
+									output.back().chance = 10000;
+							}
+
+							else if (value.find(L"delete") != std::string::npos)
+								output.back().remove = true;
+
+							else if (value.find(L'?') != std::string::npos ||
+									 value.find(L'!') != std::string::npos)
+							{
+								std::wstring item_name;
+
+								for (unsigned int ch = 0; ch < value.size(); ++ch)
+								{
+									if (value[ch] == L'?' ||
+										value[ch] == L'!' ||
+										ch == value.size()-1)
+									{
+										if (ch == value.size()-1 &&
+											!(value[ch] == L'?' || value[ch] == L'!') )
+											item_name += value[ch];
+
+										bool add_to_found = (value[ch] == L'!') ? true : false;
+
+										if (!item_name.empty())
+										{
+											unsigned int id = get_item_id_by_name(item_name, items_list_copy);
+
+											if (add_to_found)
+												output.back().found_on_map.push_back(id);
+											else
+												output.back().not_found_on_map.push_back(id);
+
+											item_name.clear();
+										}
+										continue;
+									}
+
+									item_name += value[ch];
+								}
+							}
+
+						}
+						else
+							input.push_back(get_item_id_by_name(reagent_name, items_list_copy));
+
+						if (input_block_trigger)
 							input_block = false;
-						// reagent_buffer block! =============
-						
+
 						reagent_buffer.clear();
 						continue;
 					}
@@ -396,23 +513,26 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 					reagent_buffer += process[i];
 				}
 
+				std::sort(input.begin(), input.end());
 				reactions_list_copy.push_back(Reaction(input, output));
+
 				break;
+			}
+
+			case STARTED_ITEMS:
+			{
+				for (auto & i : items_list_copy)
+				{
+					if (i.get_name().toWideString() == process)
+					{
+						started_items_copy.push_back(Reagent({i.get_id()}));
+						break;
+					}
+				}
 			}
 
 			default:
 				break;
 		}
 	}
-
-	// debug
-	// std::cout << game_settings.name.toAnsiString() << std::endl
-	// << game_settings.author.toAnsiString() << std::endl
-	// << game_settings.description.toAnsiString() << std::endl
-	// << std::endl
-	// << "Item colors:" << std::endl;
-	// for (auto & i : items_colors)
-	// 	std::cout << i.name.toAnsiString()
-	// 	<< " text(" << int(i.text.r) << " " << int(i.text.g) << " " << int(i.text.b)
-	// 	<< ") background(" << int(i.background.r) << " " << int(i.background.g) << " " << int(i.background.b) << ")" << std::endl;
 }

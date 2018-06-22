@@ -194,8 +194,8 @@ void Standart_games::charodey(std::vector<sf::Texture*> &item_textures_copy, std
 	reactions_list_copy.push_back(Reaction({9, 12}, std::vector<unsigned int>{59}));  // sand+glass=hourglass
 	reactions_list_copy.push_back(Reaction({17, 53}, std::vector<unsigned int>{60}));  // desert+beetle=scarab
 
-	started_items_copy.push_back(Reagent({1, false}));
-	started_items_copy.push_back(Reagent({2, false}));
-	started_items_copy.push_back(Reagent({3, false}));
-	started_items_copy.push_back(Reagent({4, false}));
+	started_items_copy.push_back(Reagent({1}));
+	started_items_copy.push_back(Reagent({2}));
+	started_items_copy.push_back(Reagent({3}));
+	started_items_copy.push_back(Reagent({4}));
 }

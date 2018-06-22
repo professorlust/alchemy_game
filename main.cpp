@@ -44,14 +44,15 @@ int main(int argc, char const *argv[])
 	std::vector<Reagent> items_to_spawn; // IDs of the elemenets that will spawn after reaction
 	unsigned int open_items_number = 0;
 
-	Modifications_loader::load_modification("test", item_textures, items_list, reactions_list, items_to_spawn, game_settings);
-	for (auto & i : items_list)
-		i.set_opened();
+	/* Test */
+	// Modifications_loader::load_modification("test", item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	// for (auto & i : items_list)
+	// 	i.set_opened();
 
-	// Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
-	// bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
-	// if (save_game_loaded)
-	// 	items_to_spawn.clear();
+	Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
+	if (save_game_loaded)
+		items_to_spawn.clear();
 
 	if (!game_settings.render_top_elements_panel)
 		Config::set_borders(sf::FloatRect(0, 0, CONFIG.window_sizes().x, CONFIG.window_sizes().y));
@@ -311,7 +312,7 @@ int main(int argc, char const *argv[])
 
 		/* Check reactions */
 
-		if (reaction_items_IDs.size() > 0)
+		if (!reaction_items_IDs.empty())
 		{
 			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end()); // sort the items_on_map
 
@@ -331,7 +332,7 @@ int main(int argc, char const *argv[])
 
 		/* Removal of elements after the reaction */
 
-		if (items_to_erase.size() > 0)
+		if (!items_to_erase.empty())
 		{
 			std::sort(items_to_erase.begin(), items_to_erase.end());
 			unsigned int counter = 0;
@@ -351,7 +352,7 @@ int main(int argc, char const *argv[])
 
 		/* The spawn of new elements */
 
-		if (items_to_spawn.size() > 0)
+		if (!items_to_spawn.empty())
 		{
 			int number = items_to_spawn.size();
 
@@ -390,7 +391,10 @@ int main(int argc, char const *argv[])
 							{
 								if (!items_on_map[k].is_static() &&
 									reagent.id == items_on_map[k].get_id())
+								{
 									items_on_map.erase(items_on_map.begin() + k);
+									break;
+								}
 							}
 						}
 					}
