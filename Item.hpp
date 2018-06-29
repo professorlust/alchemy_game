@@ -36,7 +36,7 @@ private:
 	static unsigned int number_of_open_items;
 
 public:
-	Item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, const Item_color item_color_ = Item_color(), bool is_static = false);
+	Item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, bool is_static = false, const Item_color item_color_ = Item_color());
 	Item(sf::String name, sf::String description, unsigned int ID, const Item_color item_color_ = Item_color(), bool is_static = false);
 	Item(const Item &copy, sf::Vector2f coordinates);
 	~Item();

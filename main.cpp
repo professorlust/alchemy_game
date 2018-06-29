@@ -18,16 +18,41 @@ int main(int argc, char const *argv[])
 	//setlocale(LC_ALL, "Rus"); // tests
 
 	Config::font.loadFromFile(CONFIG.font_name());
+	std::srand(time(0));
 
 	bool debug_commands_is_active = false;
+	std::string modification_file_name;
+
 	for (int i = 0; i < argc; ++i)
 	{
 		std::string arg = argv[i];
-		if (arg == "-debug_commands")
+		if (arg.find("-debug_commands") != std::string::npos)
 		{
 			std::cout << "The developer's commands are activated. Press ~ to start typing" << std::endl;
 			debug_commands_is_active = true;
 		}
+		else if (arg.find("-modification") != std::string::npos) // -modification(file_name)
+		{
+			bool name_block = false;
+			for (auto & j : arg)
+			{
+				if (j == '(' &&
+					!name_block)
+				{
+					name_block = true;
+					continue;
+				}
+
+				if (j == ')' &&
+					name_block)
+					break;
+
+				if (name_block)
+					modification_file_name += j;
+			}
+		}
+		else if (i > 0)
+			std::cout << arg << " - is an unknown argument to main." << std::endl;
 	}
 
 	bool autosaving_is_active = CONFIG.autosave();
@@ -49,8 +74,12 @@ int main(int argc, char const *argv[])
 	// for (auto & i : items_list)
 	// 	i.set_opened();
 
-	Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	if (!modification_file_name.empty())
+		Modifications_loader::load_modification(modification_file_name, item_textures, items_list, reactions_list, items_to_spawn, game_settings);
+	else
+		Standart_games::charodey(item_textures, items_list, reactions_list, items_to_spawn, game_settings);
 	bool save_game_loaded = load_save_game(items_list, open_items_number, items_on_map, "game_save");
+
 	if (save_game_loaded)
 		items_to_spawn.clear();
 
@@ -314,7 +343,7 @@ int main(int argc, char const *argv[])
 
 		if (!reaction_items_IDs.empty())
 		{
-			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end()); // sort the items_on_map
+			std::sort(reaction_items_IDs.begin(), reaction_items_IDs.end());
 
 			bool was_a_reaction = false;
 			for (auto & reaction : reactions_list)
@@ -325,9 +354,11 @@ int main(int argc, char const *argv[])
 					was_a_reaction = true;
 				}
 			}
-			reaction_items_IDs.clear();
+
 			if (!was_a_reaction)
 				items_to_erase.clear();
+
+			reaction_items_IDs.clear();
 		}
 
 		/* Removal of elements after the reaction */
@@ -359,6 +390,8 @@ int main(int argc, char const *argv[])
 			float R = CONFIG.item_side()/2 + CONFIG.item_side()*(number-1)/6,
 				angle = 0;
 
+			unsigned int last_item = items_on_map.size();
+
 			for (auto & reagent : items_to_spawn)
 			{
 				for (unsigned int i = 0; i < items_list.size(); ++i)
@@ -366,7 +399,8 @@ int main(int argc, char const *argv[])
 					sf::Vector2f spawn(0, 0);
 
 					if (reagent.id == items_list[i].get_id() &&
-						!items_list[i].is_static())
+						(!items_list[i].is_static() || ( items_list[i].is_static() && !items_list[i].is_opened() )) &&
+						reagent.check_conditions(items_list, items_on_map, last_item))
 					{
 						if (!reagent.remove) // just spawn new element
 						{
@@ -459,13 +493,14 @@ int main(int argc, char const *argv[])
 				i < items_list.size() && render_number < number_of_render_items;
 				++i)
 			{
-				float x = 0, y = 0;
+				sf::Vector2f position(0, 0);
+
 				if (items_list[i].is_opened() &&
 					!items_list[i].is_static())
 				{
-					x = (render_number < number_of_items_in_row) ? render_number*CONFIG.item_side() : (render_number-number_of_items_in_row)*CONFIG.item_side();
-					y = (render_number < number_of_items_in_row) ? 0 : CONFIG.item_side();
-					items_list[i].set_position_hard(sf::Vector2f(x, y));
+					position.x = (render_number < number_of_items_in_row) ? render_number*CONFIG.item_side() : (render_number-number_of_items_in_row)*CONFIG.item_side();
+					position.y = (render_number < number_of_items_in_row) ? 0 : CONFIG.item_side();
+					items_list[i].set_position_hard(position);
 					items_list[i].render(window);
 
 					render_number++;

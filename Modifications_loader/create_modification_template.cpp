@@ -29,4 +29,5 @@ void Modifications_loader::create_modification_template()
 		<< "Fire" << std::endl
 		<< "Water" << std::endl;
 
+		file.close();
 }

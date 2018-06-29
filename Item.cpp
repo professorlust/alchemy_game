@@ -1,6 +1,6 @@
 #include "Item.hpp"
 
-Item::Item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, const Item_color item_color_, bool is_static)
+Item::Item(sf::Texture* texture, sf::String name, sf::String description, unsigned int ID, bool is_static, const Item_color item_color_)
 {
 	this->texture = texture;
 	sprite.setTexture(*texture);

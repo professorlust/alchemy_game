@@ -179,9 +179,9 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 					}
 
 					if (argument.find(L"text") != std::string::npos)
-						items_colors[items_colors.size()-1].text = load_color;
+						items_colors.back().text = load_color;
 					if (argument.find(L"background") != std::string::npos)
-						items_colors[items_colors.size()-1].background = load_color;
+						items_colors.back().background = load_color;
 				}
 
 				break;
@@ -297,21 +297,29 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 
 						std::wstring argument, value;
 						bool trigger = false; // 0 - argument, 1 - value
-						for (unsigned int j = 0; j < buffer.size()-1; ++j)
+						for (auto & j : buffer)
 						{
-							if (buffer[j] == '(')
+							if (j == L'(')
+							{
+								trigger = true;
+								continue;
+							}
+							else if (j == L')')
 							{
 								trigger = true;
 								continue;
 							}
 
-							if (buffer[j] == '#')
+							if (j == L'"')
+								continue;
+
+							if (j == L'#')
 							{
 								comment_block = true;
 								break;
 							}
 
-							(trigger) ? value += buffer[j] : argument += buffer[j];
+							(trigger) ? value += j : argument += j;
 						}
 
 						if (comment_block)
@@ -366,7 +374,10 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 							}
 						}
 
+						argument.clear();
+						value.clear();
 						buffer.clear();
+						trigger = false;
 						continue;
 					}
 
@@ -376,9 +387,9 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 				if (type == ELEMENT)
 				{
 					if (has_image)
-						items_list_copy.emplace_back(item_textures_copy.back(), name, description, items_list_copy.size()+1);
+						items_list_copy.emplace_back(item_textures_copy.back(), name, description, items_list_copy.size()+1, is_static);
 					else
-						items_list_copy.emplace_back(name, description, items_list_copy.size()+1, color);
+						items_list_copy.emplace_back(name, description, items_list_copy.size()+1, color, is_static);
 				}
 				break;
 			}
@@ -464,38 +475,124 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 							else if (value.find(L"delete") != std::string::npos)
 								output.back().remove = true;
 
-							else if (value.find(L'?') != std::string::npos ||
-									 value.find(L'!') != std::string::npos)
+							// This may not work correctly on Linux operating systems. More precisely, the chances are higher than usual
+							else if (value[0] == L'?' ||
+									 value[0] == L'!' ||
+									 value[0] == L'<' ||
+									 value[0] == L'>' ||
+									 value[0] == L'*' ||
+									 value[0] == L'-')
 							{
+								std::set<char16_t> conditions_symbols = { L'?', L'!', L'>', L'<', L'~', L'*', L'-' };
+
+								enum
+								{
+									ITEM_ON_MAP = 0, // ?
+									ITEM_NOT_ON_MAP, // !
+									COUNTER_MORE,    // >
+									COUNTER_LESS,    // <
+									COUNTER_IS,      // ~
+									ITEM_IS_OPEN,    // *
+									ITEM_IS_CLOSE    // -
+								};
+
+								auto get_condition_id = [](char16_t s) -> uint8_t const
+								{
+									if (s == L'?')
+										return ITEM_ON_MAP;
+
+									else if (s == L'!')
+										return ITEM_NOT_ON_MAP;
+
+									else if (s == L'>') // Coming soon
+										return COUNTER_MORE;
+
+									else if (s == L'<') // Coming soon
+										return COUNTER_LESS;
+
+									else if (s == L'~') // Coming soon
+										return COUNTER_IS;
+
+									else if (s == L'*')
+										return ITEM_IS_OPEN;
+
+									else if (s == L'-')
+										return ITEM_IS_CLOSE;
+
+									return 255;
+								};
+								uint8_t condition_id;
+
 								std::wstring item_name;
 
-								for (unsigned int ch = 0; ch < value.size(); ++ch)
+								for (unsigned int i = 0; i < value.size(); ++i)
 								{
-									if (value[ch] == L'?' ||
-										value[ch] == L'!' ||
-										ch == value.size()-1)
+									if (conditions_symbols.count(value[i]) ||
+										i == value.size()-1)
 									{
-										if (ch == value.size()-1 &&
-											!(value[ch] == L'?' || value[ch] == L'!') )
-											item_name += value[ch];
-
-										bool add_to_found = (value[ch] == L'!') ? true : false;
+										if (i == value.size()-1 &&
+											!conditions_symbols.count(value[i]))
+											item_name += value[i];
 
 										if (!item_name.empty())
+											switch (condition_id)
 										{
-											unsigned int id = get_item_id_by_name(item_name, items_list_copy);
-
-											if (add_to_found)
+											case ITEM_ON_MAP:
+											{
+												unsigned int id = get_item_id_by_name(item_name, items_list_copy);
 												output.back().found_on_map.push_back(id);
-											else
+
+												break;
+											}
+
+											case ITEM_NOT_ON_MAP:
+											{
+												unsigned int id = get_item_id_by_name(item_name, items_list_copy);
 												output.back().not_found_on_map.push_back(id);
 
-											item_name.clear();
+												break;
+											}
+
+											case COUNTER_MORE:
+											{
+												break;
+											}
+
+											case COUNTER_LESS:
+											{
+												break;
+											}
+
+											case COUNTER_IS:
+											{
+												break;
+											}
+
+											case ITEM_IS_OPEN:
+											{
+												unsigned int id = get_item_id_by_name(item_name, items_list_copy);
+												output.back().items_is_open.push_back(id);
+
+												break;
+											}
+
+											case ITEM_IS_CLOSE:
+											{
+												unsigned int id = get_item_id_by_name(item_name, items_list_copy);
+												output.back().items_is_not_open.push_back(id);
+
+												break;
+											}
+
+											default:
+												break;
 										}
+
+										condition_id = get_condition_id(value[i]);
+										item_name.clear();
 										continue;
 									}
-
-									item_name += value[ch];
+									item_name += value[i];
 								}
 							}
 
@@ -535,4 +632,6 @@ void Modifications_loader::load_modification(std::string file_name, std::vector 
 				break;
 		}
 	}
+
+	file.close();
 }
